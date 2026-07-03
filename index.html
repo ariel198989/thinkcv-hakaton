@@ -444,6 +444,14 @@ const SB_KEY='sb_publishable_tiGoGAebIqTF-gDldacKAw_IIlaYifh';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 const COLAB='https://colab.research.google.com/gist/ariel198989/ea2262e3b42826f94b7fdf6771afbadd/yolo-train.ipynb';
 
+// safe localStorage — data: URLs / private mode throw on access. Fall back to memory.
+const _mem={};
+const LS={
+  get(k){ try{ return localStorage.getItem(k); }catch(e){ return k in _mem?_mem[k]:null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(e){ _mem[k]=v; } },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){ delete _mem[k]; } },
+};
+
 // fully neutral: no preset domain — the user defines what to detect
 let CLASSES = [];
 const CLASS_PALETTE=['#22D3EE','#F472B6','#A78BFA','#34D399','#FBBF24','#F87171','#5aa9e6','#e6c45a'];
@@ -576,7 +584,7 @@ async function initSession(){
     $('#adminBtn').style.display=AUTH.admin?'':'none';
     if(AUTH.user){
       $('#pickClassLbl').textContent=AUTH.className;
-      try{ activeStudent=JSON.parse(localStorage.getItem('thinkcv_active_'+AUTH.user.id)||'null'); }catch(e){ activeStudent=null; }
+      try{ activeStudent=JSON.parse(LS.get('thinkcv_active_'+AUTH.user.id)||'null'); }catch(e){ activeStudent=null; }
       if(activeStudent){ await enterWorkspace(); } else { await loadStudents(); }
     }
   }catch(e){ toast('בעיה בהתחברות: '+(e.message||e)); }
@@ -598,7 +606,7 @@ async function loadStudents(){
       const btn=ev.currentTarget; btn.disabled=true; btn.textContent='נכנס…';
       try{
         activeStudent={id:s.id,name:s.name};
-        localStorage.setItem('thinkcv_active_'+AUTH.user.id, JSON.stringify(activeStudent));
+        LS.set('thinkcv_active_'+AUTH.user.id, JSON.stringify(activeStudent));
         await enterWorkspace();
         routeUI();
       }catch(e){ toast('כניסה נכשלה: '+(e.message||e)); btn.disabled=false; btn.textContent='כניסה ←'; }
@@ -618,7 +626,7 @@ $('#newStuName').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDe
 
 $('#switchStuBtn').onclick=()=>{
   activeStudent=null;
-  localStorage.removeItem('thinkcv_active_'+AUTH.user.id);
+  LS.del('thinkcv_active_'+AUTH.user.id);
   images=[]; activeId=null; exported=false; lastExportBlob=null;
   loadStudents(); routeUI();
 };
