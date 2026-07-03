@@ -159,6 +159,24 @@
   .vidgrid .vg .sc{position:absolute;top:4px;inset-inline-start:4px;background:rgba(0,0,0,.75);
     font-size:11px;font-weight:800;padding:1px 7px;border-radius:99px}
 
+  /* auth + student-picker overlays */
+  .overlay{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:20px;
+    background-image:radial-gradient(circle at 30% 10%, rgba(34,211,238,.10), transparent 45%),
+      radial-gradient(circle at 80% 80%, rgba(244,114,182,.08), transparent 45%)}
+  .auth-card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px;
+    box-shadow:0 24px 80px -30px rgba(0,0,0,.9),0 0 40px -20px rgba(34,211,238,.4)}
+  .auth-card .logo{font-size:32px}
+  .auth-tabs{display:flex;gap:6px;margin:18px 0 14px;background:var(--panel-2);border-radius:12px;padding:4px}
+  .auth-tabs button{flex:1;border:none;background:transparent;border-radius:9px;padding:9px}
+  .auth-tabs button.on{background:linear-gradient(135deg,var(--neon),var(--neon-2));color:#03121B}
+  .auth-card input{width:100%;margin-bottom:10px}
+  .auth-err{color:var(--danger);font-size:12.5px;min-height:18px;margin:2px 0 8px}
+  .stu-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);
+    border-radius:12px;margin-bottom:8px;background:var(--panel-2)}
+  .stu-row .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--neon),var(--vio));
+    display:grid;place-items:center;font-weight:800;color:#03121B;flex-shrink:0}
+  .stu-row .nm{flex:1;font-weight:600}
+
   @media (max-width:560px){
     .wrap{padding:14px 11px 56px}
     .card{padding:14px}
@@ -184,6 +202,48 @@
   <symbol id="ic-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.4 3.8 5.4 3.8 8.5s-1.3 6.1-3.8 8.5c-2.5-2.4-3.8-5.4-3.8-8.5s1.3-6.1 3.8-8.5z"/></symbol>
 </defs></svg>
 
+<!-- auth screen -->
+<div class="overlay" id="authScreen" style="display:none">
+  <div class="auth-card">
+    <div class="logo">thinkCV <span class="zap">⚡</span> Hakaton</div>
+    <div class="muted" style="font-size:13.5px;margin-top:4px">מזהים מפגעים עירוניים עם AI — נכנסים ומתחילים.</div>
+    <div class="auth-tabs">
+      <button id="tabLogin" class="on">התחברות</button>
+      <button id="tabSignup">הרשמה</button>
+    </div>
+    <div id="signupExtra" style="display:none">
+      <label style="font-size:12.5px;color:var(--muted)">שם הכיתה / הקבוצה</label>
+      <input type="text" id="authClass" placeholder="למשל: כיתה ח׳2 — חולון">
+    </div>
+    <label style="font-size:12.5px;color:var(--muted)">אימייל</label>
+    <input type="text" id="authEmail" placeholder="name@school.org" style="direction:ltr;text-align:left">
+    <label style="font-size:12.5px;color:var(--muted)">סיסמה</label>
+    <input type="password" id="authPass" placeholder="••••••••" style="direction:ltr;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:9px 12px;font-size:14px;font-family:inherit;width:100%;margin-bottom:10px;box-sizing:border-box">
+    <div class="auth-err" id="authErr"></div>
+    <button class="primary" id="authGo" style="width:100%;font-size:15px;padding:12px">כניסה</button>
+  </div>
+</div>
+
+<!-- student picker -->
+<div class="overlay" id="pickScreen" style="display:none">
+  <div class="auth-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div>
+        <div style="font-weight:800;font-size:20px">מי עובד עכשיו? 🙋</div>
+        <div class="muted" style="font-size:13px" id="pickClassLbl"></div>
+      </div>
+      <button class="ghost" id="logoutBtn" style="font-size:12.5px">יציאה</button>
+    </div>
+    <div id="stuList" style="margin-top:16px"></div>
+    <div class="row" style="gap:8px;margin-top:12px">
+      <input type="text" id="newStuName" placeholder="שם תלמיד/ה חדש/ה…" style="flex:1;min-width:0">
+      <button class="primary" id="addStuBtn">➕ הוסף</button>
+    </div>
+    <div class="auth-err" id="pickErr"></div>
+    <div class="muted" style="font-size:12px;margin-top:8px">לכל תלמיד/ה חלל עבודה נפרד — התמונות והתיוגים לא מתערבבים.</div>
+  </div>
+</div>
+
 <!-- coach -->
 <div id="guide">
   <div class="g-head" id="guideHead">
@@ -202,7 +262,7 @@
   </div>
 </div>
 
-<div class="wrap">
+<div class="wrap" style="visibility:hidden">
   <header class="hero">
     <div class="logo">thinkCV <span class="zap">⚡</span> Hakaton</div>
     <div class="sub">מזהים מפגעים עירוניים עם AI — מהסרטון ברחוב ועד מודל שמזהה לבד. 🕳️🚧🗑️</div>
@@ -217,10 +277,13 @@
   </header>
 
   <div class="idbar">
-    <span style="display:flex;align-items:center;gap:8px">
-      <span class="muted" style="font-size:13px">שם צוות:</span>
-      <input type="text" id="studentName" placeholder="למשל: עירוני-1" style="width:160px">
+    <input type="hidden" id="studentName">
+    <span style="display:flex;align-items:center;gap:8px;font-size:13.5px">
+      <span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--neon),var(--vio));display:grid;place-items:center;font-weight:800;color:#03121B" id="idAva">?</span>
+      <b id="idStudent">—</b>
+      <span class="muted" id="idClass"></span>
     </span>
+    <button class="ghost" id="switchStuBtn" style="font-size:12px;padding:5px 10px">🔄 החלף תלמיד/ה</button>
     <span id="saveState" class="pill">נשמר אוטומטית</span>
     <span style="flex:1"></span>
     <span id="cloudStatus" class="pill" style="display:none"></span>
@@ -407,18 +470,124 @@ const MIN_IMAGES = 10;
 
 const $ = s => document.querySelector(s);
 
+// ---------- auth + per-student isolation ----------
+// One account per class/group (like TinkerLab). Students are sub-users: each
+// picks their name → gets an ISOLATED workspace (own IndexedDB key), so kids
+// never see each other's images. Sharing to the pool requires a session.
+const AUTH={ user:null, className:'' };
+let activeStudent=null;   // {id, name}
+
+function routeUI(){
+  $('#authScreen').style.display = AUTH.user ? 'none' : 'grid';
+  $('#pickScreen').style.display = (AUTH.user && !activeStudent) ? 'grid' : 'none';
+  document.querySelector('.wrap').style.visibility = (AUTH.user && activeStudent) ? 'visible' : 'hidden';
+  $('#guide').style.display = (AUTH.user && activeStudent) ? '' : 'none';
+}
+
+let authMode='login';
+$('#tabLogin').onclick=()=>{authMode='login';$('#tabLogin').classList.add('on');$('#tabSignup').classList.remove('on');$('#signupExtra').style.display='none';$('#authGo').textContent='כניסה';$('#authErr').textContent='';};
+$('#tabSignup').onclick=()=>{authMode='signup';$('#tabSignup').classList.add('on');$('#tabLogin').classList.remove('on');$('#signupExtra').style.display='';$('#authGo').textContent='צור חשבון';$('#authErr').textContent='';};
+$('#authPass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#authGo').click(); });
+
+$('#authGo').onclick=async()=>{
+  const email=$('#authEmail').value.trim(), pass=$('#authPass').value;
+  const err=$('#authErr'); err.textContent='';
+  if(!email||!pass){err.textContent='צריך אימייל וסיסמה';return;}
+  $('#authGo').disabled=true;
+  try{
+    if(authMode==='signup'){
+      const cls=$('#authClass').value.trim()||email.split('@')[0];
+      const r=await sb.auth.signUp({email,password:pass,options:{data:{class_name:cls}}});
+      if(r.error) throw r.error;
+      if(!r.data.session){ err.style.color='var(--ok)'; err.textContent='נשלח מייל אישור — פתחו אותו ואז התחברו כאן.'; $('#authGo').disabled=false; return; }
+    } else {
+      const r=await sb.auth.signInWithPassword({email,password:pass});
+      if(r.error) throw r.error;
+    }
+    await initSession();
+  }catch(e){ err.style.color='var(--danger)'; err.textContent=e.message==='Invalid login credentials'?'אימייל או סיסמה שגויים':(e.message||e); }
+  $('#authGo').disabled=false;
+};
+
+$('#logoutBtn').onclick=async()=>{ await sb.auth.signOut(); location.reload(); };
+
+async function initSession(){
+  const {data:{session}}=await sb.auth.getSession();
+  AUTH.user=session?.user||null;
+  AUTH.className=AUTH.user?.user_metadata?.class_name||AUTH.user?.email?.split('@')[0]||'';
+  if(AUTH.user){
+    $('#pickClassLbl').textContent=AUTH.className;
+    // restore last active student on this device
+    try{ activeStudent=JSON.parse(localStorage.getItem('thinkcv_active_'+AUTH.user.id)||'null'); }catch(e){ activeStudent=null; }
+    if(activeStudent){ await enterWorkspace(); } else { await loadStudents(); }
+  }
+  routeUI();
+}
+
+async function loadStudents(){
+  const el=$('#stuList'); el.innerHTML='<span class="muted" style="font-size:13px">טוען…</span>';
+  const {data,error}=await sb.from('thinkcv_students').select('id,name').order('name');
+  el.innerHTML='';
+  if(error){ $('#pickErr').textContent=error.message; return; }
+  if(!data.length){ el.innerHTML='<span class="muted" style="font-size:13px">אין עדיין תלמידים — הוסיפו את הראשון/ה למטה 👇</span>'; return; }
+  data.forEach(s=>{
+    const d=document.createElement('div'); d.className='stu-row';
+    d.innerHTML=`<span class="av">${(s.name||'?').charAt(0)}</span><span class="nm">${s.name}</span>
+      <button class="primary" style="padding:7px 14px;font-size:13px">כניסה ←</button>`;
+    d.querySelector('button').onclick=async()=>{
+      activeStudent={id:s.id,name:s.name};
+      localStorage.setItem('thinkcv_active_'+AUTH.user.id, JSON.stringify(activeStudent));
+      await enterWorkspace(); routeUI();
+    };
+    el.appendChild(d);
+  });
+}
+$('#addStuBtn').onclick=async()=>{
+  const name=$('#newStuName').value.trim(); if(!name) return;
+  $('#pickErr').textContent='';
+  const {error}=await sb.from('thinkcv_students').insert({owner:AUTH.user.id, name});
+  if(error){ $('#pickErr').textContent=error.message; return; }
+  $('#newStuName').value='';
+  loadStudents();
+};
+$('#newStuName').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();$('#addStuBtn').click();} });
+
+$('#switchStuBtn').onclick=()=>{
+  activeStudent=null;
+  localStorage.removeItem('thinkcv_active_'+AUTH.user.id);
+  images=[]; activeId=null; exported=false; lastExportBlob=null;
+  loadStudents(); routeUI();
+};
+
+// load the picked student's isolated workspace
+async function enterWorkspace(){
+  $('#studentName').value=activeStudent.name;
+  $('#idStudent').textContent=activeStudent.name;
+  $('#idAva').textContent=(activeStudent.name||'?').charAt(0);
+  $('#idClass').textContent='· '+AUTH.className;
+  images=[]; activeId=null; exported=false; lastExportBlob=null; $('#shareBtn').disabled=true;
+  const s=await load();
+  if(s&&Array.isArray(s.classes)&&s.classes.length){ CLASSES=s.classes; }
+  if(s&&s.subject&&$('#subjectName'))$('#subjectName').value=s.subject; else $('#subjectName').value='';
+  if(s&&s.images&&s.images.length){ images=s.images; activeId=images[0].id;
+    $('#saveState').textContent=`שוחזרו ${images.length} תמונות`; }
+  renderClasses(); renderAll();
+}
+
 // ---------- persistence (IndexedDB) ----------
 const DB='thinkcv', ST='state';
 function stKey(){
-  const p=new URLSearchParams(location.search);
-  const id=(p.get('team')||'anon').trim()||'anon';
-  return 'cur_'+id;
+  const uid=AUTH.user?AUTH.user.id:'anon';
+  const sid=activeStudent?activeStudent.id:'none';
+  return `cur_${uid}_${sid}`;
 }
 const openDB=()=>new Promise((res,rej)=>{const r=indexedDB.open(DB,1);
   r.onupgradeneeded=()=>r.result.createObjectStore(ST);
   r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);});
 const _get=(store,key)=>new Promise(r=>{const rq=store.get(key);rq.onsuccess=()=>r(rq.result);rq.onerror=()=>r(null);});
-async function save(){try{const db=await openDB();db.transaction(ST,'readwrite')
+async function save(){try{
+  if(!AUTH.user||!activeStudent) return;   // never write outside a workspace
+  const db=await openDB();db.transaction(ST,'readwrite')
   .objectStore(ST).put({student:$('#studentName').value,subject:$('#subjectName')?.value||'',images,classes:CLASSES,savedAt:Date.now()},stKey());
   $('#saveState').textContent='נשמר ✓';setTimeout(()=>$('#saveState').textContent='נשמר אוטומטית',1000);
   }catch(e){console.warn(e)}}
@@ -552,13 +721,27 @@ async function extractFromVideo(file, tag){
       dur=v.duration;
     }
     if(!isFinite(dur)||dur<=0){ alert('לא הצלחתי לקרוא את אורך הווידאו'); return; }
+    // codec guard: if the browser can't decode the track, dimensions stay 0 —
+    // extracting would only produce black frames.
+    if(!v.videoWidth||!v.videoHeight){
+      prog.innerHTML='⚠️ הדפדפן לא מצליח לפענח את הווידאו הזה (קודק לא נתמך — קורה בעיקר ב-HEVC מאייפון). נסו: הקלטה ב-"most compatible" בהגדרות המצלמה, סרטון אחר, או העלאת תמונות.';
+      return;
+    }
     const cw=Math.min(v.videoWidth||640,640);
     const ch=Math.round((v.videoHeight||480)*cw/(v.videoWidth||640));
     const cv=document.createElement('canvas'); cv.width=cw; cv.height=ch;
     const ctx=cv.getContext('2d');
     const t0=Math.min(0.3,dur*0.05), t1=dur-Math.min(0.3,dur*0.05);
     const span=Math.max(t1-t0,0.1);
-    const seek=t=>new Promise(res=>{ v.onseeked=()=>res(); v.currentTime=t; });
+    // seek with a timeout fallback — some encoders never fire `seeked` for tiny
+    // deltas, which used to hang the whole extraction.
+    const seek=t=>new Promise(res=>{
+      let done=false;
+      const fin=()=>{ if(!done){ done=true; clearTimeout(to); res(); } };
+      const to=setTimeout(fin,1500);
+      v.onseeked=fin;
+      try{ v.currentTime=t; }catch(e){ fin(); }
+    });
     const tries=skipBlur?Math.min(want*2,want+80):want;
     const cands=[];
     for(let i=0;i<tries;i++){
@@ -577,8 +760,10 @@ async function extractFromVideo(file, tag){
       added++; if(added%10===0){ prog.textContent=`סרטון ${tag||''} · מוסיף… ${added}/${chosen.length}`; await new Promise(r=>setTimeout(r,0)); }
     }
     const skipped=cands.length-chosen.length;
-    prog.innerHTML=`✅ <b>נוספו ${added} תמונות</b>${skipped>0?` · נבחרו החדות ביותר (דולגו ${skipped})`:''} — עכשיו זרקו את הלא-טובות וסמנו מלבנים.`;
+    prog.innerHTML=`✅ <b>נוספו ${added} תמונות</b>${skipped>0?` · נבחרו החדות ביותר (דולגו ${skipped})`:''} — עכשיו זרקו את הלא-טובות וסמנו מלבנים 👇`;
     renderAll();
+    // take the user to the frames so it's obvious the extraction worked
+    document.querySelector('#stage')?.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(err){ console.error(err); prog.textContent='שגיאה: '+err.message; }
   finally{ URL.revokeObjectURL(url); v.removeAttribute('src'); }
 }
@@ -911,13 +1096,15 @@ $('#shareBtn').onclick=async()=>{
   const st=$('#shareState'); st.style.display=''; st.textContent='☁️ מעלה…';
   $('#shareBtn').disabled=true;
   try{
-    const team=($('#studentName').value.trim()||'team');
-    // storage keys must be ASCII-safe — Hebrew team names live in the DB row
+    if(!AUTH.user){ throw new Error('צריך להתחבר כדי לשתף'); }
+    // storage keys must be ASCII-safe — Hebrew names live in the DB row
     const path=`datasets/ds_${Date.now()}_${Math.random().toString(36).slice(2,8)}.zip`;
     const up=await sb.storage.from('thinkcv').upload(path, built.blob, {contentType:'application/zip'});
     if(up.error) throw up.error;
     const ins=await sb.from('thinkcv_datasets').insert({
-      team_name:team,
+      owner:AUTH.user.id,
+      team_name:AUTH.className||'קבוצה',
+      student_name:activeStudent?activeStudent.name:null,
       subject:($('#subjectName')?.value||'').trim()||null,
       classes:CLASSES.map(c=>c.name),
       zip_path:path,
@@ -935,7 +1122,7 @@ let poolRows=[];
 async function loadPool(){
   const st=$('#poolState'); st.textContent='טוען…';
   const {data,error}=await sb.from('thinkcv_datasets')
-    .select('id, team_name, subject, classes, zip_path, image_count, created_at')
+    .select('id, team_name, student_name, subject, classes, zip_path, image_count, created_at')
     .order('created_at',{ascending:false}).limit(100);
   const el=$('#poolList'); el.innerHTML='';
   if(error){ st.textContent='שגיאה'; el.innerHTML='<span class="warn">'+error.message+'</span>'; return; }
@@ -948,7 +1135,7 @@ async function loadPool(){
     const cls=(Array.isArray(r.classes)?r.classes:[]).join(' · ');
     d.innerHTML=`<input type="checkbox" data-id="${r.id}">
       <div class="meta">
-        <div class="nm">${r.team_name}${r.subject?` — <span style="font-weight:400">${r.subject}</span>`:''}</div>
+        <div class="nm">${r.team_name}${r.student_name?` · ${r.student_name}`:''}${r.subject?` — <span style="font-weight:400">${r.subject}</span>`:''}</div>
         <div class="cls">${r.image_count} תמונות · ${cls||'—'} · ${when}</div>
       </div>`;
     d.querySelector('input').onchange=updateMergeBtn;
@@ -1292,15 +1479,9 @@ function renderDetList(boxes, lowGuess, top){
 
 // ---------- init ----------
 renderClasses();renderAll();
-loadPool();
-(async()=>{const s=await load();
-  if(s&&Array.isArray(s.classes)&&s.classes.length){ CLASSES=s.classes; renderClasses(); }
-  if(s&&s.subject&&$('#subjectName'))$('#subjectName').value=s.subject;
-  if(s&&s.images&&s.images.length){images=s.images;activeId=images[0].id;
-    if(s.student)$('#studentName').value=s.student;
-    renderAll();
-    $('#saveState').textContent=`שוחזרו ${images.length} תמונות`;}
-})();
+routeUI();          // everything gated behind login
+initSession();      // restore session → student picker → workspace
+loadPool();         // the shared pool is public-read
 $('#subjectName').oninput=()=>save();
 </script>
 </body>
