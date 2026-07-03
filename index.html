@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#070B12">
-<title>thinkCV Hakaton — מזהים מפגעים עירוניים עם AI</title>
+<title>thinkCV Hakaton — מאמנים AI לזהות כל דבר</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👁️</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,49 +14,48 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
   :root {
-    /* thinkCV dark-neon hackathon theme */
     --bg:#070B12; --panel:#0D1420; --panel-2:#141E2E; --line:#1E2B40;
     --ink:#E9F1FC; --muted:#8CA1BC;
     --neon:#22D3EE; --neon-2:#0EA5E9; --vio:#A78BFA; --mag:#F472B6;
-    --accent:var(--neon); --accent-soft:rgba(34,211,238,.12);
-    --ok:#34D399; --warn:#FBBF24; --danger:#F87171; --r:16px;
+    --accent-soft:rgba(34,211,238,.12);
+    --ok:#34D399; --warn:#FBBF24; --danger:#F87171; --r:18px;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);
     font-family:"Rubik",-apple-system,"Segoe UI","Heebo",Arial,sans-serif;line-height:1.55;
-    background-image:radial-gradient(circle at 20% 0%, rgba(34,211,238,.07), transparent 40%),
-      radial-gradient(circle at 85% 15%, rgba(167,139,250,.07), transparent 45%),
-      radial-gradient(rgba(140,161,188,.055) 1px, transparent 1px);
-    background-size:auto,auto,26px 26px}
-  .wrap{max-width:1120px;margin:0 auto;padding:26px 18px 90px}
+    background-image:radial-gradient(circle at 15% 0%, rgba(34,211,238,.08), transparent 42%),
+      radial-gradient(circle at 85% 12%, rgba(167,139,250,.08), transparent 46%),
+      radial-gradient(rgba(140,161,188,.05) 1px, transparent 1px);
+    background-size:auto,auto,28px 28px}
+  .wrap{max-width:1120px;margin:0 auto;padding:28px 18px 90px}
 
-  header.hero{margin:6px 0 20px}
-  .logo{font-family:"Space Grotesk","Rubik",sans-serif;font-weight:700;font-size:40px;letter-spacing:-1px;
+  header.hero{margin:8px 0 22px;text-align:center}
+  .logo{font-family:"Space Grotesk","Rubik",sans-serif;font-weight:700;font-size:44px;letter-spacing:-1px;
     background:linear-gradient(90deg,var(--neon),var(--vio),var(--mag));
     -webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
   .logo .zap{-webkit-text-fill-color:initial;color:var(--warn)}
-  header.hero .sub{color:var(--muted);font-size:15px;margin-top:2px}
-  .steps-rib{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:16px 0 4px;font-size:12.5px}
-  .steps-rib span.s{background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-weight:600;color:var(--muted)}
+  header.hero .sub{color:var(--muted);font-size:15.5px;margin-top:4px}
+  .steps-rib{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;margin:18px 0 4px;font-size:12.5px}
+  .steps-rib span.s{background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-weight:600;color:var(--muted)}
   .steps-rib span.arrow{color:var(--line)}
 
   .idbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 18px;
     background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin:16px 0}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:18px;
-    box-shadow:0 0 0 1px rgba(34,211,238,0) , 0 14px 40px -22px rgba(0,0,0,.8)}
-  .card h2{margin:0 0 4px;font-size:18px;display:flex;align-items:center;gap:8px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-bottom:20px;
+    box-shadow:0 16px 44px -26px rgba(0,0,0,.85)}
+  .card h2{margin:0 0 4px;font-size:18px;display:flex;align-items:center;gap:10px}
   .card h2 .n{font-family:"Space Grotesk",monospace;font-size:12px;background:linear-gradient(135deg,var(--neon),var(--vio));
-    color:#04121a;border-radius:8px;padding:2px 9px;font-weight:700}
+    color:#04121a;border-radius:8px;padding:2px 10px;font-weight:700;flex-shrink:0}
   .card .hint{color:var(--muted);font-size:13px;margin:0 0 14px}
   .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 
-  input[type=text]{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
-    border-radius:10px;padding:9px 12px;font-size:14px;font-family:inherit}
-  input[type=text]:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
-  select{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:8px;font-family:inherit}
+  input[type=text],input[type=password]{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+    border-radius:11px;padding:10px 13px;font-size:14px;font-family:inherit}
+  input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(34,211,238,.14)}
+  select{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:9px;font-family:inherit}
 
-  button{font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px;
-    padding:9px 16px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);transition:.15s}
+  button{font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border-radius:11px;
+    padding:10px 17px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);transition:.15s}
   button:hover:not(:disabled){border-color:var(--neon);transform:translateY(-1px)}
   button:disabled{opacity:.35;cursor:not-allowed}
   button.primary{background:linear-gradient(135deg,var(--neon),var(--neon-2));color:#03121B;border-color:transparent;font-weight:700}
@@ -65,34 +64,13 @@
   button.hot:hover:not(:disabled){filter:brightness(1.12)}
   button.ghost{background:transparent}
   .ic{width:1.05em;height:1.05em;vertical-align:-3px;margin-inline-end:6px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .pill{font-size:11px;padding:2px 9px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted)}
+  .pill{font-size:11px;padding:3px 10px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted)}
   .muted{color:var(--muted)}
   .status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--danger);margin-inline-end:6px}
   .status-dot.live{background:var(--ok);box-shadow:0 0 8px var(--ok)}
 
-  /* guide coach */
-  #guide{position:fixed;inset-block-end:18px;inset-inline-start:18px;z-index:50;width:320px;max-width:calc(100vw - 36px);
-    background:var(--panel);border:1px solid var(--neon);border-radius:18px;
-    box-shadow:0 10px 40px rgba(0,0,0,.6),0 0 24px -8px rgba(34,211,238,.5);overflow:hidden}
-  #guide .g-head{display:flex;align-items:center;gap:10px;padding:11px 14px;
-    background:linear-gradient(135deg,rgba(34,211,238,.14),transparent);border-block-end:1px solid var(--line);cursor:pointer}
-  #guide .g-ava{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--neon),var(--vio));display:grid;place-items:center;font-size:19px;flex-shrink:0}
-  #guide .g-title{font-weight:700;font-size:14px;flex:1}
-  #guide .g-step{font-size:11px;color:var(--neon)}
-  #guide .g-toggle{background:transparent;border:none;color:var(--muted);font-size:16px;padding:2px 6px}
-  #guide .g-body{padding:14px;font-size:13.5px;line-height:1.6}
-  #guide.collapsed .g-body{display:none}
-  #guide .g-msg{margin:0 0 12px;white-space:pre-line}
-  #guide .g-checklist{list-style:none;margin:0 0 12px;padding:0;font-size:12px}
-  #guide .g-checklist li{padding:3px 0;color:var(--muted)}
-  #guide .g-checklist li.done{color:var(--ok)}
-  #guide .g-checklist li.cur{color:var(--ink);font-weight:700}
-  #guide .g-cta{width:100%;text-align:center}
-  #guide .g-bar{height:5px;background:var(--panel-2);border-radius:999px;overflow:hidden;margin-block-start:10px}
-  #guide .g-bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--neon),var(--vio));transition:width .4s}
-
   .classes{display:flex;gap:8px;flex-wrap:wrap}
-  .class-btn{display:flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;
+  .class-btn{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;
     border:1.5px solid var(--line);background:var(--panel-2)}
   .class-btn .sw{width:12px;height:12px;border-radius:3px}
   .class-btn.sel{border-color:var(--neon);background:var(--accent-soft);box-shadow:0 0 12px -4px var(--neon)}
@@ -101,30 +79,27 @@
   .stage-wrap{display:flex;gap:18px;flex-wrap:wrap}
   .stage-col{flex:1 1 320px;min-width:0}
   .side-col{width:230px}
-  .stage{position:relative;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;
+  .stage{position:relative;background:var(--panel-2);border:1px solid var(--line);border-radius:14px;
     overflow:hidden;user-select:none;touch-action:none}
   .stage img{display:block;width:100%;pointer-events:none}
   .stage canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
-  .stage .empty{display:grid;place-items:center;height:240px;color:var(--muted);font-size:13px}
+  .stage .empty{display:grid;place-items:center;height:240px;color:var(--muted);font-size:13px;text-align:center;padding:0 20px}
 
-  .strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px;margin-top:10px}
-  .frame{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:4/3;border:2px solid var(--line);cursor:pointer}
+  .strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:6px;margin-top:10px}
+  .frame{position:relative;border-radius:9px;overflow:hidden;aspect-ratio:4/3;border:2px solid var(--line);cursor:pointer}
   .frame.active{border-color:var(--neon);box-shadow:0 0 10px -3px var(--neon)}
   .frame img{width:100%;height:100%;object-fit:cover;display:block}
   .frame .cnt{position:absolute;bottom:0;right:0;left:0;background:rgba(0,0,0,.72);
     font-size:10px;text-align:center;font-weight:700;padding:1px}
   .frame .cnt.none{color:var(--danger)}
   .frame .cnt.has{color:var(--ok)}
-  .frame .subj{position:absolute;top:2px;inset-inline-end:2px;max-width:70%;
-    background:rgba(6,20,30,.85);color:#aef;font-size:9px;font-weight:700;
-    padding:1px 5px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .frame .x{position:absolute;top:2px;inset-inline-start:2px;width:16px;height:16px;border-radius:50%;
+  .frame .x{position:absolute;top:2px;inset-inline-start:2px;width:17px;height:17px;border-radius:50%;
     background:rgba(0,0,0,.65);color:#fff;border:none;font-size:11px;padding:0;line-height:1;display:none}
   .frame:hover .x{display:block}
 
   .boxlist{margin-top:10px}
-  .boxrow{display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--panel-2);
-    border:1px solid var(--line);border-radius:8px;margin-bottom:5px;font-size:13px}
+  .boxrow{display:flex;align-items:center;gap:8px;padding:6px 9px;background:var(--panel-2);
+    border:1px solid var(--line);border-radius:9px;margin-bottom:5px;font-size:13px}
   .boxrow .sw{width:12px;height:12px;border-radius:3px;flex-shrink:0}
   .boxrow .del{margin-inline-start:auto;background:transparent;border:none;color:var(--danger);
     padding:2px 6px;font-size:16px}
@@ -133,57 +108,60 @@
   .stat .v{font-size:22px;font-weight:800;font-family:"Space Grotesk","Rubik",sans-serif}
   .stat .l{font-size:11px;color:var(--muted)}
   details summary{cursor:pointer;color:var(--muted);font-size:13px}
-  pre{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:12px;
+  pre{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:12px;
     direction:ltr;text-align:left;font-size:12px;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
   .warn{color:var(--warn);font-size:12px}
   code{background:var(--panel-2);padding:1px 6px;border-radius:4px;font-size:12px}
 
-  .dropzone{border:2px dashed var(--line);border-radius:12px;padding:16px;text-align:center;
+  .dropzone{border:2px dashed var(--line);border-radius:13px;padding:17px;text-align:center;
     color:var(--muted);font-size:13px;cursor:pointer;transition:.15s;background:var(--panel-2)}
   .dropzone:hover{border-color:var(--neon)}
   .dropzone.over{border-color:var(--neon);background:var(--accent-soft);color:var(--ink)}
   .dropzone b{color:var(--ink)}
 
-  /* shared pool */
-  .pool-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);
-    border-radius:12px;margin-bottom:8px;background:var(--panel-2);font-size:13.5px}
+  .pool-row{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--line);
+    border-radius:13px;margin-bottom:8px;background:var(--panel-2);font-size:13.5px}
   .pool-row .meta{flex:1;min-width:0}
   .pool-row .nm{font-weight:700}
   .pool-row .cls{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .pool-row input[type=checkbox]{width:17px;height:17px;accent-color:var(--neon)}
 
-  /* video test results grid */
   .vidgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
-  .vidgrid .vg{border:1px solid var(--line);border-radius:10px;overflow:hidden;position:relative}
+  .vidgrid .vg{border:1px solid var(--line);border-radius:11px;overflow:hidden;position:relative;cursor:pointer}
   .vidgrid .vg img{width:100%;display:block}
   .vidgrid .vg .sc{position:absolute;top:4px;inset-inline-start:4px;background:rgba(0,0,0,.75);
     font-size:11px;font-weight:800;padding:1px 7px;border-radius:99px}
 
-  /* auth + student-picker overlays */
+  /* overlays */
   .overlay{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:20px;
     background-image:radial-gradient(circle at 30% 10%, rgba(34,211,238,.10), transparent 45%),
-      radial-gradient(circle at 80% 80%, rgba(244,114,182,.08), transparent 45%)}
-  .auth-card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px;
-    box-shadow:0 24px 80px -30px rgba(0,0,0,.9),0 0 40px -20px rgba(34,211,238,.4)}
-  .auth-card .logo{font-size:32px}
-  .auth-tabs{display:flex;gap:6px;margin:18px 0 14px;background:var(--panel-2);border-radius:12px;padding:4px}
-  .auth-tabs button{flex:1;border:none;background:transparent;border-radius:9px;padding:9px}
+      radial-gradient(circle at 80% 85%, rgba(244,114,182,.08), transparent 45%)}
+  .auth-card{width:100%;max-width:430px;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:30px;
+    box-shadow:0 24px 80px -30px rgba(0,0,0,.9),0 0 44px -20px rgba(34,211,238,.4)}
+  .auth-card .logo{font-size:34px}
+  .auth-tabs{display:flex;gap:6px;margin:20px 0 16px;background:var(--panel-2);border-radius:13px;padding:4px}
+  .auth-tabs button{flex:1;border:none;background:transparent;border-radius:10px;padding:10px}
   .auth-tabs button.on{background:linear-gradient(135deg,var(--neon),var(--neon-2));color:#03121B}
   .auth-card input{width:100%;margin-bottom:10px}
-  .auth-err{color:var(--danger);font-size:12.5px;min-height:18px;margin:2px 0 8px}
-  .stu-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);
-    border-radius:12px;margin-bottom:8px;background:var(--panel-2)}
-  .stu-row .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--neon),var(--vio));
+  .auth-err{font-size:12.5px;min-height:18px;margin:2px 0 8px;color:var(--danger)}
+  .stu-row{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--line);
+    border-radius:13px;margin-bottom:8px;background:var(--panel-2)}
+  .stu-row .av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--neon),var(--vio));
     display:grid;place-items:center;font-weight:800;color:#03121B;flex-shrink:0}
   .stu-row .nm{flex:1;font-weight:600}
 
+  /* error toast — no more silent failures */
+  #toast{position:fixed;bottom:16px;right:16px;left:16px;z-index:200;max-width:520px;margin:0 auto;
+    background:#2a1215;border:1px solid var(--danger);color:#ffd9d9;border-radius:13px;padding:11px 15px;
+    font-size:13px;display:none;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+
   @media (max-width:560px){
     .wrap{padding:14px 11px 56px}
-    .card{padding:14px}
-    .logo{font-size:30px}
+    .card{padding:15px}
+    .logo{font-size:31px}
     .stage-col{flex-basis:100%}
     .side-col{width:100%}
-    .class-btn{padding:9px 15px}
+    .class-btn{padding:10px 15px}
     .row > button{flex:1 1 auto;min-height:44px;justify-content:center;display:inline-flex;align-items:center}
   }
 </style>
@@ -193,34 +171,35 @@
   <symbol id="ic-cam" viewBox="0 0 24 24"><path d="M4 8.5a2 2 0 0 1 2-2h1.5l1-1.5h5l1 1.5H18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.5" r="3"/></symbol>
   <symbol id="ic-upload" viewBox="0 0 24 24"><path d="M12 16V5M8 9l4-4 4 4"/><path d="M5 16v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2"/></symbol>
   <symbol id="ic-download" viewBox="0 0 24 24"><path d="M12 4v11M8 11l4 4 4-4"/><path d="M5 18v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1"/></symbol>
-  <symbol id="ic-spark" viewBox="0 0 24 24"><path d="M12 4l1.6 4.4L18 10l-4.4 1.6L12 16l-1.6-4.4L6 10l4.4-1.6z"/><path d="M18 15l.7 1.8L20.5 17.5 18.7 18.2 18 20l-.7-1.8L15.5 17.5 17.3 16.8z"/></symbol>
+  <symbol id="ic-spark" viewBox="0 0 24 24"><path d="M12 4l1.6 4.4L18 10l-4.4 1.6L12 16l-1.6-4.4L6 10l4.4-1.6z"/></symbol>
   <symbol id="ic-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h6a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
   <symbol id="ic-cloud" viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1 .5-8 5 5 0 0 1 9.6 1.4A3.5 3.5 0 0 1 17 18z"/><path d="M12 12v5M9.5 14.5 12 17l2.5-2.5"/></symbol>
   <symbol id="ic-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 16l-5-5L5 20"/></symbol>
   <symbol id="ic-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17l9-10"/></symbol>
-  <symbol id="ic-brain" viewBox="0 0 24 24"><path d="M12 5.5a3 3 0 0 0-3 3 3 3 0 0 0-1.6 5.2A2.8 2.8 0 0 0 9 18.5a3 3 0 0 0 3 .8"/><path d="M12 5.5a3 3 0 0 1 3 3 3 3 0 0 1 1.6 5.2A2.8 2.8 0 0 1 15 18.5a3 3 0 0 1-3 .8"/><path d="M12 5.8v13"/></symbol>
   <symbol id="ic-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.4 3.8 5.4 3.8 8.5s-1.3 6.1-3.8 8.5c-2.5-2.4-3.8-5.4-3.8-8.5s1.3-6.1 3.8-8.5z"/></symbol>
 </defs></svg>
 
-<!-- auth screen -->
+<div id="toast"></div>
+
+<!-- auth -->
 <div class="overlay" id="authScreen" style="display:none">
   <div class="auth-card">
     <div class="logo">thinkCV <span class="zap">⚡</span> Hakaton</div>
-    <div class="muted" style="font-size:13.5px;margin-top:4px">מזהים מפגעים עירוניים עם AI — נכנסים ומתחילים.</div>
+    <div class="muted" style="font-size:13.5px;margin-top:4px">מאמנים AI לזהות <b style="color:var(--ink)">כל דבר</b> — נכנסים ומתחילים.</div>
     <div class="auth-tabs">
       <button id="tabLogin" class="on">התחברות</button>
       <button id="tabSignup">הרשמה</button>
     </div>
     <div id="signupExtra" style="display:none">
-      <label style="font-size:12.5px;color:var(--muted)">שם הכיתה / הקבוצה</label>
-      <input type="text" id="authClass" placeholder="למשל: כיתה ח׳2 — חולון">
+      <label style="font-size:12.5px;color:var(--muted)">שם הקבוצה / הכיתה</label>
+      <input type="text" id="authClass" placeholder="למשל: קבוצה 3">
     </div>
     <label style="font-size:12.5px;color:var(--muted)">אימייל</label>
-    <input type="text" id="authEmail" placeholder="name@school.org" style="direction:ltr;text-align:left">
+    <input type="text" id="authEmail" placeholder="name@mail.com" style="direction:ltr;text-align:left" autocomplete="username">
     <label style="font-size:12.5px;color:var(--muted)">סיסמה</label>
-    <input type="password" id="authPass" placeholder="••••••••" style="direction:ltr;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:9px 12px;font-size:14px;font-family:inherit;width:100%;margin-bottom:10px;box-sizing:border-box">
+    <input type="password" id="authPass" placeholder="••••••••" style="direction:ltr;text-align:left" autocomplete="current-password">
     <div class="auth-err" id="authErr"></div>
-    <button class="primary" id="authGo" style="width:100%;font-size:15px;padding:12px">כניסה</button>
+    <button class="primary" id="authGo" style="width:100%;font-size:15px;padding:13px">כניסה</button>
   </div>
 </div>
 
@@ -229,188 +208,153 @@
   <div class="auth-card">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
       <div>
-        <div style="font-weight:800;font-size:20px">מי עובד עכשיו? 🙋</div>
+        <div style="font-weight:800;font-size:21px">מי עובד עכשיו? 🙋</div>
         <div class="muted" style="font-size:13px" id="pickClassLbl"></div>
       </div>
       <button class="ghost" id="logoutBtn" style="font-size:12.5px">יציאה</button>
     </div>
-    <div id="stuList" style="margin-top:16px"></div>
+    <div id="stuList" style="margin-top:16px;max-height:44vh;overflow-y:auto"></div>
     <div class="row" style="gap:8px;margin-top:12px">
-      <input type="text" id="newStuName" placeholder="שם תלמיד/ה חדש/ה…" style="flex:1;min-width:0">
+      <input type="text" id="newStuName" placeholder="שם משתתפ/ת חדש/ה…" style="flex:1;min-width:0">
       <button class="primary" id="addStuBtn">➕ הוסף</button>
     </div>
     <div class="auth-err" id="pickErr"></div>
-    <div class="muted" style="font-size:12px;margin-top:8px">לכל תלמיד/ה חלל עבודה נפרד — התמונות והתיוגים לא מתערבבים.</div>
-  </div>
-</div>
-
-<!-- coach -->
-<div id="guide">
-  <div class="g-head" id="guideHead">
-    <div class="g-ava">👁️</div>
-    <div>
-      <div class="g-title">CV Coach</div>
-      <div class="g-step" id="guideStep">שלב 1 מתוך 5</div>
-    </div>
-    <button class="g-toggle" id="guideToggle" title="הסתר/הצג">▾</button>
-  </div>
-  <div class="g-body">
-    <p class="g-msg" id="guideMsg">טוען…</p>
-    <ul class="g-checklist" id="guideChecklist"></ul>
-    <button class="primary g-cta" id="guideCta" style="display:none"></button>
-    <div class="g-bar"><i id="guideBar" style="width:0%"></i></div>
+    <div class="muted" style="font-size:12px;margin-top:8px">לכל משתתפ/ת חלל עבודה נפרד — התמונות לא מתערבבות.</div>
   </div>
 </div>
 
 <div class="wrap" style="visibility:hidden">
   <header class="hero">
     <div class="logo">thinkCV <span class="zap">⚡</span> Hakaton</div>
-    <div class="sub">מזהים מפגעים עירוניים עם AI — מהסרטון ברחוב ועד מודל שמזהה לבד. 🕳️🚧🗑️</div>
+    <div class="sub">מאמנים מודל ראייה ממוחשבת לזהות <b style="color:var(--ink)">כל מה שתבחרו</b> — מהסרטון ועד מודל עובד. 👁️</div>
     <div class="steps-rib">
       <span class="s">1 · סרטונים 🎬</span><span class="arrow">←</span>
-      <span class="s">2 · פירוק לתמונות 🖼️</span><span class="arrow">←</span>
-      <span class="s">3 · תיוג ✍️</span><span class="arrow">←</span>
-      <span class="s">4 · שמירה ושיתוף 💾</span><span class="arrow">←</span>
-      <span class="s">5 · אימון 🧠</span><span class="arrow">←</span>
-      <span class="s">6 · בדיקה 🔍</span>
+      <span class="s">2 · תיוג ✍️</span><span class="arrow">←</span>
+      <span class="s">3 · שמירה ושיתוף 💾</span><span class="arrow">←</span>
+      <span class="s">4 · אימון 🧠</span><span class="arrow">←</span>
+      <span class="s">5 · בדיקה 🔍</span>
     </div>
   </header>
 
   <div class="idbar">
     <input type="hidden" id="studentName">
-    <span style="display:flex;align-items:center;gap:8px;font-size:13.5px">
-      <span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--neon),var(--vio));display:grid;place-items:center;font-weight:800;color:#03121B" id="idAva">?</span>
+    <span style="display:flex;align-items:center;gap:9px;font-size:13.5px">
+      <span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--neon),var(--vio));display:grid;place-items:center;font-weight:800;color:#03121B" id="idAva">?</span>
       <b id="idStudent">—</b>
       <span class="muted" id="idClass"></span>
     </span>
-    <button class="ghost" id="switchStuBtn" style="font-size:12px;padding:5px 10px">🔄 החלף תלמיד/ה</button>
+    <button class="ghost" id="switchStuBtn" style="font-size:12px;padding:6px 11px">🔄 החלפה</button>
     <span id="saveState" class="pill">נשמר אוטומטית</span>
     <span style="flex:1"></span>
     <span id="cloudStatus" class="pill" style="display:none"></span>
   </div>
 
-  <!-- 1+2: videos → frames -->
+  <!-- 1: media in -->
   <div class="card">
-    <h2><span class="n">1·2</span>העלאת סרטונים → פירוק לתמונות 🎬</h2>
-    <p class="hint">צלמו סרטונים קצרים (~30-60 ש׳) של המפגע <b>מכל הכיוונים</b> — קרוב/רחוק, זוויות שונות, תאורה שונה. אפשר לבחור <b>כמה סרטונים בבת אחת</b> — האפליקציה תפרק אותם לתמונות ותשמור את החדות ביותר.</p>
+    <h2><span class="n">1</span>סרטונים ותמונות 🎬</h2>
+    <p class="hint">צלמו סרטונים קצרים (~30-60 ש׳) של מה שתרצו שהמודל יזהה — <b>מכל הכיוונים</b>: קרוב/רחוק, זוויות, תאורה ורקעים שונים. אפשר כמה סרטונים בבת אחת — נחלץ אוטומטית את התמונות החדות ביותר.</p>
 
     <div class="row" style="align-items:center;gap:8px;flex-wrap:wrap">
-      <label for="subjectName" style="font-size:13px;font-weight:600">איזה מפגע מתעדים?</label>
-      <input id="subjectName" type="text" placeholder="למשל: בור ברחוב הרצל" style="flex:1;min-width:180px;max-width:280px">
-      <span class="hint" style="font-size:12px;margin:0">כל התמונות החדשות יתויקו תחת השם הזה.</span>
+      <label for="subjectName" style="font-size:13px;font-weight:600">מה מצלמים עכשיו?</label>
+      <input id="subjectName" type="text" placeholder="למשל: כוס קפה / כלב / מוצר" style="flex:1;min-width:170px;max-width:280px">
+      <span class="hint" style="font-size:12px;margin:0">התמונות החדשות יתויקו תחת השם הזה.</span>
     </div>
 
     <div class="row" style="gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px">
-      <button class="primary" id="videoBtn" style="font-size:15px;padding:11px 20px"><svg class="ic"><use href="#ic-image"/></svg>🎬 בחר/צלם סרטונים</button>
+      <button class="primary" id="videoBtn" style="font-size:15px;padding:12px 22px"><svg class="ic"><use href="#ic-image"/></svg>🎬 בחר סרטונים</button>
       <input type="file" id="videoInput" accept="video/*" multiple style="display:none">
-      <label style="font-size:12px;color:var(--muted)">תמונות מכל סרטון:
-        <select id="frameCount" style="padding:4px 8px"><option>30</option><option selected>60</option><option>100</option><option>160</option></select></label>
+      <button id="uploadBtn"><svg class="ic"><use href="#ic-upload"/></svg>העלה תמונות</button>
+      <input type="file" id="fileInput" accept="image/*" multiple style="display:none">
+      <button class="ghost" id="deviceCamBtn"><svg class="ic"><use href="#ic-cam"/></svg>מצלמה</button>
+      <input type="file" id="mobileCapInput" accept="image/*" capture="environment" style="display:none">
+      <label style="font-size:12px;color:var(--muted)">תמונות מסרטון:
+        <select id="frameCount" style="padding:5px 8px"><option>30</option><option selected>60</option><option>100</option><option>160</option></select></label>
       <label style="font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:5px">
-        <input type="checkbox" id="vidBlur" checked> שמור רק חדות</label>
+        <input type="checkbox" id="vidBlur" checked> רק חדות</label>
     </div>
-    <div id="videoProgress" class="hint" style="font-size:12.5px;margin-top:8px"></div>
+    <div id="videoProgress" class="hint" style="font-size:12.5px;margin-top:10px"></div>
     <video id="vidScratch" style="display:none" muted playsinline></video>
 
-    <details style="margin-top:12px">
-      <summary>אין סרטון? אפשר גם מצלמה / העלאת תמונות</summary>
-      <div class="row" style="gap:10px;flex-wrap:wrap;margin-top:10px">
-        <button id="deviceCamBtn"><svg class="ic"><use href="#ic-cam"/></svg>צלם במצלמה</button>
-        <button class="ghost" id="uploadBtn"><svg class="ic"><use href="#ic-upload"/></svg>העלה תמונות</button>
-        <input type="file" id="fileInput" accept="image/*" multiple style="display:none">
-        <input type="file" id="mobileCapInput" accept="image/*" capture="environment" style="display:none">
+    <div id="webcamWrap" style="display:none;margin-top:12px">
+      <video id="webcam" autoplay playsinline muted
+        style="width:100%;max-width:360px;border-radius:12px;background:#000"></video>
+      <div class="row" style="gap:10px;margin-top:8px">
+        <button class="primary" id="snapBtn"><svg class="ic"><use href="#ic-cam"/></svg>צלם עכשיו</button>
+        <button class="ghost" id="closeCamBtn">סגור מצלמה</button>
       </div>
-      <div id="webcamWrap" style="display:none;margin-top:12px">
-        <video id="webcam" autoplay playsinline muted
-          style="width:100%;max-width:360px;border-radius:10px;background:#000"></video>
-        <div class="row" style="gap:10px;margin-top:8px">
-          <button class="primary" id="snapBtn"><svg class="ic"><use href="#ic-cam"/></svg>צלם עכשיו</button>
-          <button class="ghost" id="closeCamBtn">סגור מצלמה</button>
-        </div>
-      </div>
-      <div class="dropzone" id="imgDrop" style="margin-top:12px"><svg class="ic"><use href="#ic-upload"/></svg><b>גרור לכאן תמונות</b> — או לחץ לבחירה</div>
-    </details>
+    </div>
+    <div class="dropzone" id="imgDrop" style="margin-top:12px"><svg class="ic"><use href="#ic-upload"/></svg><b>או גררו לכאן</b> סרטונים / תמונות</div>
   </div>
 
-  <!-- 3: select + tag -->
+  <!-- 2: tag -->
   <div class="card">
-    <h2><span class="n">3</span>בחירת תמונות + תיוג ✍️</h2>
-    <p class="hint"><b>בחירה:</b> בפס התמונות למטה — רחפו ולחצו ✕ כדי לזרוק תמונות לא טובות (מטושטשות/כפולות).<br>
-    <b>תיוג:</b> בחרו קלאס (סוג מפגע) → גררו מלבן <b>צמוד</b> סביב המפגע. אפשר כמה מלבנים בתמונה.<br>
-    <b>תמונה בלי מפגע?</b> לחצו <b>"🚫 רקע — אין מפגע"</b> — זה מלמד את המודל מה זה רחוב תקין (חשוב! ~רבע מהתמונות).</p>
+    <h2><span class="n">2</span>תיוג ✍️</h2>
+    <p class="hint"><b>קטגוריות:</b> הוסיפו למטה את מה שהמודל ילמד לזהות (אחת או יותר — כל שם שתרצו).<br>
+    <b>תיוג:</b> בחרו קטגוריה → גררו מלבן <b>צמוד</b> סביב האובייקט. תמונה לא טובה? ✕ בפס למטה.<br>
+    <b>תמונה בלי האובייקט?</b> "🚫 רקע" — מלמד את המודל מה זה "כלום" (מומלץ ~רבע מהתמונות).</p>
 
-    <div class="classes" id="classBtns" style="margin-bottom:10px"></div>
-
-    <div class="row" style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input type="text" id="newClassName" placeholder="סוג מפגע חדש (למשל: עמוד נטוי)" style="flex:1;min-width:180px;max-width:260px">
-      <button class="ghost" id="addClassBtn"><svg class="ic"><use href="#ic-check"/></svg>➕ הוסף קלאס</button>
-      <span class="hint" style="font-size:12px;margin:0">כל שם שתרצו.</span>
+    <div class="row" style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      <input type="text" id="newClassName" placeholder="מה ה-AI ילמד לזהות? למשל: כוס" style="flex:1;min-width:180px;max-width:280px">
+      <button class="primary" id="addClassBtn"><svg class="ic"><use href="#ic-check"/></svg>הוסף קטגוריה</button>
     </div>
+    <div class="classes" id="classBtns" style="margin-bottom:12px"></div>
 
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <button class="ghost" id="autoBoxBtn" title="ניסיון זיהוי אוטומטי בתמונה הנוכחית"><svg class="ic"><use href="#ic-spark"/></svg>סמן אוטומטי (תמונה זו)</button>
+      <button class="ghost" id="autoBoxBtn"><svg class="ic"><use href="#ic-spark"/></svg>סמן אוטומטי</button>
       <button class="ghost" id="autoBoxAllBtn"><svg class="ic"><use href="#ic-spark"/></svg>סמן הכל</button>
-      <button class="ghost" id="markBgBtn" title="אין מפגע בתמונה — רחוב תקין">🚫 רקע — אין מפגע</button>
-      <span class="hint" style="font-size:12px;margin:0">אוטומטי עובד רק ברקע נקי — ברחוב עדיף ידני.</span>
+      <button class="ghost" id="markBgBtn">🚫 רקע — אין אובייקט</button>
+      <span class="hint" style="font-size:12px;margin:0">אוטומטי עובד רק על רקע נקי ואחיד.</span>
     </div>
 
     <div class="stage-wrap">
       <div class="stage-col">
-        <div class="stage" id="stage"><div class="empty">העלו סרטון או תמונות כדי להתחיל לתייג</div></div>
+        <div class="stage" id="stage"><div class="empty">העלו סרטון או תמונות בשלב 1 — הפריימים יופיעו כאן לתיוג</div></div>
         <div class="strip" id="strip"></div>
       </div>
       <div class="side-col">
-        <div class="muted" style="font-size:13px;margin-bottom:6px">מלבנים בתמונה הנוכחית:</div>
+        <div class="muted" style="font-size:13px;margin-bottom:6px">מלבנים בתמונה:</div>
         <div class="boxlist" id="boxList"><span class="muted" style="font-size:12px">אין עדיין</span></div>
         <div class="stat-grid" id="stats" style="margin-top:14px"></div>
       </div>
     </div>
   </div>
 
-  <!-- 4: save + share -->
+  <!-- 3: save + share -->
   <div class="card">
-    <h2><span class="n">4</span>שמירה ושיתוף 💾</h2>
-    <p class="hint">מוריד ZIP במבנה YOLO (תמונות + תיוגים + פיצול train/val) — ואפשר גם לשתף אותו למאגר המשותף כדי שכל הצוותים יאמנו מודל אחד חזק ביחד.</p>
+    <h2><span class="n">3</span>שמירה ושיתוף 💾</h2>
+    <p class="hint">יורד ZIP במבנה YOLO (תמונות + תיוגים). שיתוף למאגר = כולם יכולים לאמן ביחד מודל אחד חזק.</p>
     <div class="row">
-      <button class="primary" id="exportBtn" style="font-size:15px;padding:12px 20px"><svg class="ic"><use href="#ic-download"/></svg>📦 שמור דאטהסט (ZIP)</button>
-      <button class="hot" id="shareBtn" style="font-size:15px;padding:12px 20px" disabled><svg class="ic"><use href="#ic-globe"/></svg>🌐 שתף למאגר המשותף</button>
+      <button class="primary" id="exportBtn" style="font-size:15px;padding:13px 22px"><svg class="ic"><use href="#ic-download"/></svg>📦 שמור דאטהסט</button>
+      <button class="hot" id="shareBtn" style="font-size:15px;padding:13px 22px" disabled><svg class="ic"><use href="#ic-globe"/></svg>🌐 שתף למאגר</button>
       <span id="shareState" class="pill" style="display:none"></span>
     </div>
-    <details style="margin-top:12px">
-      <summary>פרטים טכניים</summary>
-      <p class="hint">ZIP במבנה YOLO: <code>images/</code>, <code>labels/</code> (txt לכל תמונה), <code>data.yaml</code>, פיצול train/val לפי סצנה.</p>
-      <pre>class_id  x_center  y_center  width  height   (מנורמל 0–1)</pre>
-    </details>
   </div>
 
-  <!-- 5: train -->
+  <!-- 4: train -->
   <div class="card">
-    <h2><span class="n">5</span>אימון 🧠</h2>
-    <p class="hint">האימון רץ בחינם על GPU בענן (Google Colab). שלושה צעדים:</p>
-    <div class="row" style="margin-bottom:8px"><span class="pill" style="background:var(--neon);color:#03121B;font-weight:700">1</span><span style="font-size:13px">פתחו את מחברת האימון</span></div>
-    <div class="row" style="margin-bottom:8px"><span class="pill" style="background:var(--neon);color:#03121B;font-weight:700">2</span><span style="font-size:13px"><code>Runtime → Run all</code> → כשמתבקש, העלו את ה-ZIP (שלכם או הממוזג מהמאגר)</span></div>
-    <div class="row" style="margin-bottom:12px"><span class="pill" style="background:var(--neon);color:#03121B;font-weight:700">3</span><span style="font-size:13px">חכו ~10 דק׳ → יורד <code>yolo_tfjs_model.zip</code></span></div>
-    <button class="primary" id="colabBtn"><svg class="ic"><use href="#ic-cloud"/></svg>☁️ פתח מחברת אימון ב-Colab</button>
+    <h2><span class="n">4</span>אימון 🧠</h2>
+    <p class="hint">האימון רץ חינם על GPU בענן (Google Colab): פתחו את המחברת → <code>Runtime → Run all</code> → העלו את ה-ZIP → ~10 דק׳ → יורד <code>yolo_tfjs_model.zip</code>.</p>
+    <button class="primary" id="colabBtn"><svg class="ic"><use href="#ic-cloud"/></svg>☁️ פתח מחברת אימון</button>
     <p class="hint" style="margin-top:8px">⚠️ ודאו GPU: <code>Runtime → Change runtime type → T4 GPU</code>.</p>
   </div>
 
-  <!-- 6: test -->
+  <!-- 5: test -->
   <div class="card">
-    <h2><span class="n">6</span>בדיקה 🔍</h2>
-    <p class="hint">טענו את <code>yolo_tfjs_model.zip</code> שירד מהאימון — ובדקו אותו על תמונה חדשה או על סרטון שלם.</p>
+    <h2><span class="n">5</span>בדיקה 🔍</h2>
+    <p class="hint">טענו את <code>yolo_tfjs_model.zip</code> — ובדקו על תמונה חדשה או סרטון שלם. רץ כולו בדפדפן.</p>
     <div class="row" style="margin-bottom:12px">
-      <button class="ghost" id="loadModelBtn"><svg class="ic"><use href="#ic-folder"/></svg>טען קובץ מודל (ZIP)</button>
+      <button class="ghost" id="loadModelBtn"><svg class="ic"><use href="#ic-folder"/></svg>טען מודל (ZIP)</button>
       <input type="file" id="modelFile" accept=".zip" style="display:none">
       <span id="modelStatus" class="pill"><span class="status-dot"></span>אין מודל</span>
     </div>
-    <div class="dropzone" id="modelDrop" style="margin-bottom:12px"><svg class="ic"><use href="#ic-cloud"/></svg><b>גרור לכאן את</b> <code>yolo_tfjs_model.zip</code> — או לחץ לבחירה</div>
+    <div class="dropzone" id="modelDrop" style="margin-bottom:12px"><svg class="ic"><use href="#ic-cloud"/></svg><b>גררו לכאן את</b> <code>yolo_tfjs_model.zip</code></div>
     <div class="stage-wrap">
       <div class="stage-col">
-        <div class="stage" id="testStage"><div class="empty">טען מודל, ואז העלה תמונה או סרטון לבדיקה</div></div>
-        <div class="dropzone" id="testDrop" style="margin-top:10px"><svg class="ic"><use href="#ic-image"/></svg><b>גרור לכאן תמונה או סרטון</b> לבדיקה — או לחץ לבחירה</div>
+        <div class="stage" id="testStage"><div class="empty">טענו מודל, ואז העלו תמונה או סרטון לבדיקה</div></div>
+        <div class="dropzone" id="testDrop" style="margin-top:10px"><svg class="ic"><use href="#ic-image"/></svg><b>גררו תמונה או סרטון</b> לבדיקה</div>
         <div class="row" style="margin-top:10px">
-          <button class="ghost" id="testUploadBtn" disabled>העלה תמונה</button>
-          <button class="ghost" id="testVideoBtn" disabled>🎬 בדוק סרטון</button>
-          <button class="primary" id="testTrainBtn" disabled title="בדיקת ביטחון על תמונה שהמודל כבר ראה">🎯 בדוק על תמונת אימון</button>
+          <button class="ghost" id="testUploadBtn" disabled>העלה תמונה/סרטון</button>
+          <button class="primary" id="testTrainBtn" disabled title="בדיקת ביטחון על תמונה שהמודל ראה באימון">🎯 בדוק על תמונת אימון</button>
           <input type="file" id="testFile" accept="image/*,video/*" style="display:none">
           <label style="font-size:12px;color:var(--muted)">רגישות:
             <input type="text" id="confInput" value="0.1" style="width:50px;padding:4px 8px"></label>
@@ -424,21 +368,21 @@
     </div>
   </div>
 
-  <!-- shared pool -->
+  <!-- pool -->
   <div class="card" style="border-color:rgba(167,139,250,.5)">
     <h2><span class="n" style="background:linear-gradient(135deg,var(--vio),var(--mag))">🌐</span>המאגר המשותף — מאמנים ביחד</h2>
-    <p class="hint">כל צוות שמשתף את הדאטהסט שלו מופיע כאן. בחרו צוותים → <b>מזג והורד</b> → תקבלו ZIP אחד מאוחד (הקלאסים מתמזגים אוטומטית) → העלו אותו ל-Colab ואמנו מודל של כולם.</p>
+    <p class="hint">כל מי ששיתף מופיע כאן. בחרו דאטהסטים → <b>מזג והורד</b> → ZIP אחד מאוחד (קטגוריות מתמזגות אוטומטית) → העלו ל-Colab ואמנו מודל של כולם.</p>
     <div class="row" style="margin-bottom:12px">
-      <button class="ghost" id="poolRefreshBtn">🔄 רענן רשימה</button>
-      <button class="hot" id="mergeBtn" disabled><svg class="ic"><use href="#ic-download"/></svg>מזג והורד דאטהסט מאוחד</button>
+      <button class="ghost" id="poolRefreshBtn">🔄 רענן</button>
+      <button class="hot" id="mergeBtn" disabled><svg class="ic"><use href="#ic-download"/></svg>מזג והורד</button>
       <span id="poolState" class="pill">—</span>
     </div>
-    <div id="poolList"><span class="muted" style="font-size:13px">לחצו "רענן רשימה"…</span></div>
+    <div id="poolList"><span class="muted" style="font-size:13px">טוען…</span></div>
     <div id="mergeProgress" class="hint" style="font-size:12.5px;margin-top:8px"></div>
   </div>
 
   <div style="text-align:center;color:var(--muted);font-size:12px;margin-top:8px">
-    thinkCV Hakaton · YOLOv8 · אימון ב-Colab · רץ כולו בדפדפן 👁️
+    thinkCV Hakaton · YOLOv8 · אימון ב-Colab · הכל בדפדפן 👁️
   </div>
 </div>
 
@@ -449,39 +393,38 @@ const SB_KEY='sb_publishable_tiGoGAebIqTF-gDldacKAw_IIlaYifh';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 const COLAB='https://colab.research.google.com/gist/ariel198989/ea2262e3b42826f94b7fdf6771afbadd/yolo-train.ipynb';
 
-// urban-hazard preset classes (editable — add your own below)
-let CLASSES = [
-  { id:'pothole', name:'בור בכביש',   color:'#F87171' },
-  { id:'sidewalk',name:'מדרכה שבורה', color:'#FBBF24' },
-  { id:'trash',   name:'פסולת ברחוב', color:'#34D399' },
-  { id:'graffiti',name:'גרפיטי',      color:'#A78BFA' },
-  { id:'sign',    name:'תמרור פגום',  color:'#22D3EE' },
-  { id:'light',   name:'תאורה תקולה', color:'#F472B6' },
-];
-const CLASS_PALETTE=['#5aa9e6','#e6675a','#9b5ae6','#e6c45a','#5ae6b0','#e65aa9','#7a8aa0','#c98b3b'];
+// fully neutral: no preset domain — the user defines what to detect
+let CLASSES = [];
+const CLASS_PALETTE=['#22D3EE','#F472B6','#A78BFA','#34D399','#FBBF24','#F87171','#5aa9e6','#e6c45a'];
 const IMG_W = 640, IMG_H = 480;
 
-let images = [];          // {id, dataURL, boxes:[{cls,x,y,w,h 0..1}], subject, negative}
+let images = [];
 let activeId = null;
 let selClass = 0;
 let exported = false;
-let lastExportBlob = null; // for one-click share after export
+let lastExportBlob = null;
 const MIN_IMAGES = 10;
 
 const $ = s => document.querySelector(s);
 
+// no silent failures: surface every unexpected error as a toast
+function toast(msg){
+  const t=$('#toast'); t.textContent='⚠️ '+msg; t.style.display='block';
+  clearTimeout(toast._t); toast._t=setTimeout(()=>{t.style.display='none';},7000);
+}
+window.addEventListener('error',e=>toast('שגיאה: '+(e.message||'לא ידועה')));
+window.addEventListener('unhandledrejection',e=>toast('שגיאה: '+(e.reason&&e.reason.message||e.reason||'לא ידועה')));
+
+const clsOf=i=>CLASSES[i]||{name:'קטגוריה '+(i+1),color:CLASS_PALETTE[i%CLASS_PALETTE.length]};
+
 // ---------- auth + per-student isolation ----------
-// One account per class/group (like TinkerLab). Students are sub-users: each
-// picks their name → gets an ISOLATED workspace (own IndexedDB key), so kids
-// never see each other's images. Sharing to the pool requires a session.
 const AUTH={ user:null, className:'' };
-let activeStudent=null;   // {id, name}
+let activeStudent=null;
 
 function routeUI(){
   $('#authScreen').style.display = AUTH.user ? 'none' : 'grid';
   $('#pickScreen').style.display = (AUTH.user && !activeStudent) ? 'grid' : 'none';
   document.querySelector('.wrap').style.visibility = (AUTH.user && activeStudent) ? 'visible' : 'hidden';
-  $('#guide').style.display = (AUTH.user && activeStudent) ? '' : 'none';
 }
 
 let authMode='login';
@@ -491,7 +434,7 @@ $('#authPass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#authGo').
 
 $('#authGo').onclick=async()=>{
   const email=$('#authEmail').value.trim(), pass=$('#authPass').value;
-  const err=$('#authErr'); err.textContent='';
+  const err=$('#authErr'); err.style.color='var(--danger)'; err.textContent='';
   if(!email||!pass){err.textContent='צריך אימייל וסיסמה';return;}
   $('#authGo').disabled=true;
   try{
@@ -499,28 +442,29 @@ $('#authGo').onclick=async()=>{
       const cls=$('#authClass').value.trim()||email.split('@')[0];
       const r=await sb.auth.signUp({email,password:pass,options:{data:{class_name:cls}}});
       if(r.error) throw r.error;
-      if(!r.data.session){ err.style.color='var(--ok)'; err.textContent='נשלח מייל אישור — פתחו אותו ואז התחברו כאן.'; $('#authGo').disabled=false; return; }
+      if(!r.data.session){ err.style.color='var(--ok)'; err.textContent='נשלח מייל אישור — פתחו אותו ואז התחברו.'; $('#authGo').disabled=false; return; }
     } else {
       const r=await sb.auth.signInWithPassword({email,password:pass});
       if(r.error) throw r.error;
     }
     await initSession();
-  }catch(e){ err.style.color='var(--danger)'; err.textContent=e.message==='Invalid login credentials'?'אימייל או סיסמה שגויים':(e.message||e); }
+  }catch(e){ err.textContent=e.message==='Invalid login credentials'?'אימייל או סיסמה שגויים':(e.message||e); }
   $('#authGo').disabled=false;
 };
 
 $('#logoutBtn').onclick=async()=>{ await sb.auth.signOut(); location.reload(); };
 
 async function initSession(){
-  const {data:{session}}=await sb.auth.getSession();
-  AUTH.user=session?.user||null;
-  AUTH.className=AUTH.user?.user_metadata?.class_name||AUTH.user?.email?.split('@')[0]||'';
-  if(AUTH.user){
-    $('#pickClassLbl').textContent=AUTH.className;
-    // restore last active student on this device
-    try{ activeStudent=JSON.parse(localStorage.getItem('thinkcv_active_'+AUTH.user.id)||'null'); }catch(e){ activeStudent=null; }
-    if(activeStudent){ await enterWorkspace(); } else { await loadStudents(); }
-  }
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    AUTH.user=session?.user||null;
+    AUTH.className=AUTH.user?.user_metadata?.class_name||AUTH.user?.email?.split('@')[0]||'';
+    if(AUTH.user){
+      $('#pickClassLbl').textContent=AUTH.className;
+      try{ activeStudent=JSON.parse(localStorage.getItem('thinkcv_active_'+AUTH.user.id)||'null'); }catch(e){ activeStudent=null; }
+      if(activeStudent){ await enterWorkspace(); } else { await loadStudents(); }
+    }
+  }catch(e){ toast('בעיה בהתחברות: '+(e.message||e)); }
   routeUI();
 }
 
@@ -529,15 +473,20 @@ async function loadStudents(){
   const {data,error}=await sb.from('thinkcv_students').select('id,name').order('name');
   el.innerHTML='';
   if(error){ $('#pickErr').textContent=error.message; return; }
-  if(!data.length){ el.innerHTML='<span class="muted" style="font-size:13px">אין עדיין תלמידים — הוסיפו את הראשון/ה למטה 👇</span>'; return; }
+  if(!data.length){ el.innerHTML='<span class="muted" style="font-size:13px">אין עדיין משתתפים — הוסיפו את הראשון/ה 👇</span>'; return; }
   data.forEach(s=>{
     const d=document.createElement('div'); d.className='stu-row';
-    d.innerHTML=`<span class="av">${(s.name||'?').charAt(0)}</span><span class="nm">${s.name}</span>
-      <button class="primary" style="padding:7px 14px;font-size:13px">כניסה ←</button>`;
-    d.querySelector('button').onclick=async()=>{
-      activeStudent={id:s.id,name:s.name};
-      localStorage.setItem('thinkcv_active_'+AUTH.user.id, JSON.stringify(activeStudent));
-      await enterWorkspace(); routeUI();
+    d.innerHTML=`<span class="av">${(s.name||'?').charAt(0)}</span><span class="nm"></span>
+      <button class="primary" style="padding:8px 16px;font-size:13px">כניסה ←</button>`;
+    d.querySelector('.nm').textContent=s.name;
+    d.querySelector('button').onclick=async(ev)=>{
+      const btn=ev.currentTarget; btn.disabled=true; btn.textContent='נכנס…';
+      try{
+        activeStudent={id:s.id,name:s.name};
+        localStorage.setItem('thinkcv_active_'+AUTH.user.id, JSON.stringify(activeStudent));
+        await enterWorkspace();
+        routeUI();
+      }catch(e){ toast('כניסה נכשלה: '+(e.message||e)); btn.disabled=false; btn.textContent='כניסה ←'; }
     };
     el.appendChild(d);
   });
@@ -559,22 +508,23 @@ $('#switchStuBtn').onclick=()=>{
   loadStudents(); routeUI();
 };
 
-// load the picked student's isolated workspace
 async function enterWorkspace(){
   $('#studentName').value=activeStudent.name;
   $('#idStudent').textContent=activeStudent.name;
   $('#idAva').textContent=(activeStudent.name||'?').charAt(0);
   $('#idClass').textContent='· '+AUTH.className;
   images=[]; activeId=null; exported=false; lastExportBlob=null; $('#shareBtn').disabled=true;
-  const s=await load();
-  if(s&&Array.isArray(s.classes)&&s.classes.length){ CLASSES=s.classes; }
-  if(s&&s.subject&&$('#subjectName'))$('#subjectName').value=s.subject; else $('#subjectName').value='';
+  let s=null;
+  try{ s=await load(); }catch(e){ s=null; }
+  CLASSES = (s&&Array.isArray(s.classes)&&s.classes.length) ? s.classes : [];
+  $('#subjectName').value = (s&&s.subject) ? s.subject : '';
   if(s&&s.images&&s.images.length){ images=s.images; activeId=images[0].id;
     $('#saveState').textContent=`שוחזרו ${images.length} תמונות`; }
+  selClass=0;
   renderClasses(); renderAll();
 }
 
-// ---------- persistence (IndexedDB) ----------
+// ---------- persistence (IndexedDB, key per account+student) ----------
 const DB='thinkcv', ST='state';
 function stKey(){
   const uid=AUTH.user?AUTH.user.id:'anon';
@@ -586,7 +536,7 @@ const openDB=()=>new Promise((res,rej)=>{const r=indexedDB.open(DB,1);
   r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);});
 const _get=(store,key)=>new Promise(r=>{const rq=store.get(key);rq.onsuccess=()=>r(rq.result);rq.onerror=()=>r(null);});
 async function save(){try{
-  if(!AUTH.user||!activeStudent) return;   // never write outside a workspace
+  if(!AUTH.user||!activeStudent) return;
   const db=await openDB();db.transaction(ST,'readwrite')
   .objectStore(ST).put({student:$('#studentName').value,subject:$('#subjectName')?.value||'',images,classes:CLASSES,savedAt:Date.now()},stKey());
   $('#saveState').textContent='נשמר ✓';setTimeout(()=>$('#saveState').textContent='נשמר אוטומטית',1000);
@@ -597,13 +547,18 @@ async function load(){try{
   return await _get(store,stKey());
 }catch(e){return null}}
 
-// ---------- class palette ----------
+// ---------- classes (fully user-defined) ----------
 function renderClasses(){
   const c=$('#classBtns');c.innerHTML='';
+  if(!CLASSES.length){
+    c.innerHTML='<span class="muted" style="font-size:12.5px">אין עדיין קטגוריות — הוסיפו למעלה את מה שה-AI ילמד לזהות ✨</span>';
+    return;
+  }
   CLASSES.forEach((cl,i)=>{
     const b=document.createElement('button');
     b.className='class-btn'+(i===selClass?' sel':'');
-    b.innerHTML=`<span class="sw" style="background:${cl.color}"></span>${cl.name} <span class="key">[${i+1}]</span>`;
+    b.innerHTML=`<span class="sw" style="background:${cl.color}"></span><span class="cname"></span> <span class="key">[${i+1}]</span>`;
+    b.querySelector('.cname').textContent=cl.name;
     b.onclick=()=>{selClass=i;renderClasses()};
     c.appendChild(b);
   });
@@ -624,10 +579,13 @@ document.addEventListener('keydown',e=>{
   if(n>=1 && n<=CLASSES.length){selClass=n-1;renderClasses()}
 });
 
-// ---------- images intake ----------
-function handleImageFiles(fileList){
-  [...fileList].forEach(f=>{
-    if(!f.type.startsWith('image/')) return;
+// ---------- media intake ----------
+function handleMediaFiles(fileList){
+  const files=[...fileList];
+  const vids=files.filter(f=>f.type.startsWith('video/'));
+  const imgs=files.filter(f=>f.type.startsWith('image/'));
+  if(vids.length) handleVideoFiles(vids);
+  imgs.forEach(f=>{
     const r=new FileReader();
     r.onload=ev=>{
       const im=new Image();im.onload=()=>{
@@ -637,12 +595,12 @@ function handleImageFiles(fileList){
       };im.src=ev.target.result;
     };r.readAsDataURL(f);
   });
+  if(imgs.length) setTimeout(()=>{ $('#stage')?.scrollIntoView({behavior:'smooth',block:'start'}); }, 600);
 }
-$('#fileInput').onchange=e=>handleImageFiles(e.target.files);
+$('#fileInput').onchange=e=>{handleMediaFiles(e.target.files);e.target.value='';};
 $('#uploadBtn').onclick=()=>$('#fileInput').click();
-$('#mobileCapInput').onchange=e=>handleImageFiles(e.target.files);
+$('#mobileCapInput').onchange=e=>{handleMediaFiles(e.target.files);e.target.value='';};
 
-// device camera
 let webcamStream=null;
 async function openWebcam(){
   const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -654,7 +612,7 @@ async function openWebcam(){
     $('#webcamWrap').style.display='block';
     $('#deviceCamBtn').disabled=true;
   }catch(err){
-    alert('לא הצלחתי לפתוח מצלמה ('+(err&&err.name||'')+'). אפשר להעלות קבצים במקום.');
+    toast('לא נפתחה מצלמה ('+(err&&err.name||'')+') — אפשר להעלות קבצים.');
     $('#fileInput').click();
   }
 }
@@ -685,7 +643,7 @@ function wireDrop(zoneId, onFiles){
     if(files&&files.length) onFiles(files);
   });
 }
-wireDrop('imgDrop', handleImageFiles);
+wireDrop('imgDrop', handleMediaFiles);
 $('#imgDrop').addEventListener('click',()=>$('#fileInput').click());
 
 function addImage(dataURL){
@@ -696,17 +654,15 @@ function addImage(dataURL){
   return id;
 }
 
-// ---------- videos → frames (multiple files) ----------
+// ---------- videos → frames ----------
 $('#videoBtn').onclick=()=>$('#videoInput').click();
-$('#videoInput').onchange=async e=>{
-  const files=[...e.target.files].filter(f=>f.type.startsWith('video/'));
+$('#videoInput').onchange=e=>{ handleVideoFiles([...e.target.files].filter(f=>f.type.startsWith('video/'))); e.target.value=''; };
+async function handleVideoFiles(files){
   if(!files.length) return;
   for(let i=0;i<files.length;i++){
-    $('#videoProgress').textContent=`סרטון ${i+1}/${files.length}…`;
-    await extractFromVideo(files[i], `${i+1}/${files.length}`);
+    await extractFromVideo(files[i], files.length>1?`${i+1}/${files.length}`:'');
   }
-  e.target.value='';
-};
+}
 
 async function extractFromVideo(file, tag){
   const v=$('#vidScratch'), prog=$('#videoProgress');
@@ -717,24 +673,20 @@ async function extractFromVideo(file, tag){
     await new Promise((res,rej)=>{ v.onloadedmetadata=()=>res(); v.onerror=()=>rej(new Error('הווידאו לא נטען')); });
     let dur=v.duration;
     if(!isFinite(dur)||dur<=0){
-      await new Promise(res=>{ v.onseeked=()=>res(); v.currentTime=1e7; });
+      await new Promise(res=>{ const to=setTimeout(res,2000); v.onseeked=()=>{clearTimeout(to);res();}; v.currentTime=1e7; });
       dur=v.duration;
     }
-    if(!isFinite(dur)||dur<=0){ alert('לא הצלחתי לקרוא את אורך הווידאו'); return; }
-    // codec guard: if the browser can't decode the track, dimensions stay 0 —
-    // extracting would only produce black frames.
+    if(!isFinite(dur)||dur<=0){ prog.textContent='⚠️ לא הצלחתי לקרוא את אורך הווידאו — נסו סרטון אחר.'; return; }
     if(!v.videoWidth||!v.videoHeight){
-      prog.innerHTML='⚠️ הדפדפן לא מצליח לפענח את הווידאו הזה (קודק לא נתמך — קורה בעיקר ב-HEVC מאייפון). נסו: הקלטה ב-"most compatible" בהגדרות המצלמה, סרטון אחר, או העלאת תמונות.';
+      prog.innerHTML='⚠️ הדפדפן לא מפענח את הווידאו (קודק לא נתמך, קורה ב-HEVC מאייפון). נסו: הגדרות מצלמה → "Most Compatible", או העלאת תמונות.';
       return;
     }
-    const cw=Math.min(v.videoWidth||640,640);
-    const ch=Math.round((v.videoHeight||480)*cw/(v.videoWidth||640));
+    const cw=Math.min(v.videoWidth,640);
+    const ch=Math.round(v.videoHeight*cw/v.videoWidth);
     const cv=document.createElement('canvas'); cv.width=cw; cv.height=ch;
     const ctx=cv.getContext('2d');
     const t0=Math.min(0.3,dur*0.05), t1=dur-Math.min(0.3,dur*0.05);
     const span=Math.max(t1-t0,0.1);
-    // seek with a timeout fallback — some encoders never fire `seeked` for tiny
-    // deltas, which used to hang the whole extraction.
     const seek=t=>new Promise(res=>{
       let done=false;
       const fin=()=>{ if(!done){ done=true; clearTimeout(to); res(); } };
@@ -748,23 +700,19 @@ async function extractFromVideo(file, tag){
       await seek(Math.min(t0+span*(i/(tries-1||1)), t1));
       ctx.drawImage(v,0,0,cw,ch);
       cands.push({ url:cv.toDataURL('image/jpeg',0.85), score:skipBlur?blurScore(ctx,cw,ch):1, i });
-      prog.textContent=`סרטון ${tag||''} · סורק… ${i+1}/${tries}`;
+      prog.textContent=`${tag?('סרטון '+tag+' · '):''}סורק… ${i+1}/${tries}`;
       await new Promise(r=>setTimeout(r,0));
     }
     const chosen = skipBlur
       ? cands.slice().sort((a,b)=>b.score-a.score).slice(0,want).sort((a,b)=>a.i-b.i)
       : cands.slice(0,want);
     let added=0;
-    for(const f of chosen){
-      addImage(f.url);
-      added++; if(added%10===0){ prog.textContent=`סרטון ${tag||''} · מוסיף… ${added}/${chosen.length}`; await new Promise(r=>setTimeout(r,0)); }
-    }
+    for(const f of chosen){ addImage(f.url); added++; }
     const skipped=cands.length-chosen.length;
-    prog.innerHTML=`✅ <b>נוספו ${added} תמונות</b>${skipped>0?` · נבחרו החדות ביותר (דולגו ${skipped})`:''} — עכשיו זרקו את הלא-טובות וסמנו מלבנים 👇`;
+    prog.innerHTML=`✅ <b>נוספו ${added} תמונות</b>${skipped>0?` (נשמרו החדות ביותר)`:''} — גללו למטה לתייג 👇`;
     renderAll();
-    // take the user to the frames so it's obvious the extraction worked
-    document.querySelector('#stage')?.scrollIntoView({behavior:'smooth',block:'start'});
-  }catch(err){ console.error(err); prog.textContent='שגיאה: '+err.message; }
+    $('#stage')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(err){ console.error(err); prog.textContent='⚠️ שגיאה: '+err.message; }
   finally{ URL.revokeObjectURL(url); v.removeAttribute('src'); }
 }
 
@@ -784,7 +732,7 @@ function blurScore(srcCtx,W,H){
   return sum2/n-(sum/n)*(sum/n);
 }
 
-// ---------- auto-annotation (background-diff; street scenes → mostly manual) ----------
+// ---------- auto-annotation (background diff; clean backgrounds only) ----------
 async function detectBox(dataURL){
   return new Promise((resolve)=>{
     const img = new Image();
@@ -812,9 +760,7 @@ async function detectBox(dataURL){
         }
       }
       if(n<20||maxX-minX<15||maxY-minY<15){resolve(null);return;}
-      // near-full-frame = failed background-diff, NOT an object (would teach
-      // "object = whole image" → model fires 100% on everything)
-      if(((maxX-minX)/W)*((maxY-minY)/H) > 0.85){ resolve(null); return; }
+      if(((maxX-minX)/W)*((maxY-minY)/H) > 0.85){ resolve(null); return; }  // failed diff, not an object
       const pad=Math.max(3,Math.floor(Math.min(W,H)*0.015));
       minX=Math.max(0,minX-pad); minY=Math.max(0,minY-pad);
       maxX=Math.min(W-1,maxX+pad); maxY=Math.min(H-1,maxY+pad);
@@ -825,19 +771,23 @@ async function detectBox(dataURL){
   });
 }
 
+function needClass(){ if(!CLASSES.length){ toast('קודם הוסיפו קטגוריה (בקטע התיוג)'); return true; } return false; }
+
 async function autoAnnotateCurrent(){
+  if(needClass()) return;
   const im=images.find(i=>i.id===activeId);
-  if(!im){alert('אין תמונה פעילה');return;}
+  if(!im){toast('אין תמונה פעילה');return;}
   const btn=$('#autoBoxBtn');const orig=btn.innerHTML;btn.disabled=true;btn.textContent='מנתח...';
   const box=await detectBox(im.dataURL);
   btn.disabled=false;btn.innerHTML=orig;
-  if(!box){alert('לא זוהה אובייקט אוטומטית — בסצנת רחוב עדיף לסמן ידנית.');return;}
+  if(!box){toast('לא זוהה אוטומטית — סמנו ידנית (עובד רק על רקע אחיד).');return;}
   im.boxes.push({cls:selClass,...box});
   renderAll();save();
 }
 async function autoAnnotateAll(){
+  if(needClass()) return;
   const todo=images.filter(im=>im.boxes.length===0 && !im.negative);
-  if(!todo.length){alert('כל התמונות כבר מתויגות.');return;}
+  if(!todo.length){toast('הכל כבר מתויג.');return;}
   const btn=$('#autoBoxAllBtn');const orig=btn.innerHTML;btn.disabled=true;
   let ok=0, fail=0;
   for(const im of todo){
@@ -847,13 +797,13 @@ async function autoAnnotateAll(){
   }
   btn.disabled=false;btn.innerHTML=orig;
   renderAll();save();
-  alert(`סומנו ${ok} אוטומטית. ${fail} דורשות סימון ידני.`);
+  toast(`סומנו ${ok} אוטומטית · ${fail} לתיוג ידני`);
 }
 $('#autoBoxBtn').onclick=autoAnnotateCurrent;
 $('#autoBoxAllBtn').onclick=autoAnnotateAll;
 $('#markBgBtn').onclick=()=>{
   const im=images.find(i=>i.id===activeId);
-  if(!im){alert('בחרו קודם תמונה');return;}
+  if(!im){toast('בחרו קודם תמונה');return;}
   im.negative=!im.negative;
   if(im.negative) im.boxes=[];
   renderAll();save();
@@ -865,9 +815,10 @@ let drawing=false, startX=0, startY=0, curBox=null;
 function renderStage(){
   const stage=$('#stage');
   const im=images.find(i=>i.id===activeId);
-  if(!im){stage.innerHTML='<div class="empty">העלו סרטון או תמונות כדי להתחיל לתייג</div>';return;}
-  stage.innerHTML=`<img id="stageImg" src="${im.dataURL}"><canvas id="overlay"></canvas>`;
+  if(!im){stage.innerHTML='<div class="empty">העלו סרטון או תמונות בשלב 1 — הפריימים יופיעו כאן לתיוג</div>';return;}
+  stage.innerHTML=`<img id="stageImg"><canvas id="overlay"></canvas>`;
   const img=$('#stageImg'), cv=$('#overlay');
+  img.src=im.dataURL;
   img.onload=()=>{cv.width=img.clientWidth;cv.height=img.clientHeight;drawBoxes();};
   if(img.complete){cv.width=img.clientWidth||IMG_W;cv.height=img.clientHeight||IMG_H;drawBoxes();}
 
@@ -876,7 +827,7 @@ function renderStage(){
     const cy=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
     return {x:Math.max(0,Math.min(1,cx/r.width)), y:Math.max(0,Math.min(1,cy/r.height))};};
 
-  const down=e=>{e.preventDefault();drawing=true;const p=getXY(e);startX=p.x;startY=p.y;curBox=null;};
+  const down=e=>{ if(needClass()) return; e.preventDefault();drawing=true;const p=getXY(e);startX=p.x;startY=p.y;curBox=null;};
   const move=e=>{if(!drawing)return;e.preventDefault();const p=getXY(e);
     curBox={x:Math.min(startX,p.x),y:Math.min(startY,p.y),w:Math.abs(p.x-startX),h:Math.abs(p.y-startY)};drawBoxes();};
   const up=e=>{if(!drawing)return;drawing=false;
@@ -893,7 +844,7 @@ function drawBoxes(){
   const im=images.find(i=>i.id===activeId);if(!im)return;
   const all=[...im.boxes];if(curBox)all.push({cls:selClass,...curBox,_temp:true});
   all.forEach(b=>{
-    const cl=CLASSES[b.cls]||CLASSES[0];
+    const cl=clsOf(b.cls);
     ctx.lineWidth=2;ctx.strokeStyle=cl.color;ctx.setLineDash(b._temp?[5,4]:[]);
     ctx.strokeRect(b.x*W,b.y*H,b.w*W,b.h*H);
     if(!b._temp){ctx.fillStyle=cl.color;ctx.font='bold 12px sans-serif';
@@ -908,10 +859,11 @@ function renderBoxList(){
   if(!im||!im.boxes.length){el.innerHTML='<span class="muted" style="font-size:12px">אין עדיין מלבנים</span>';return;}
   el.innerHTML='';
   im.boxes.forEach((b,i)=>{
-    const cl=CLASSES[b.cls]||CLASSES[0];const r=document.createElement('div');r.className='boxrow';
-    r.innerHTML=`<span class="sw" style="background:${cl.color}"></span>${cl.name}
+    const cl=clsOf(b.cls);const r=document.createElement('div');r.className='boxrow';
+    r.innerHTML=`<span class="sw" style="background:${cl.color}"></span><span class="bn"></span>
       <span class="muted" style="font-size:11px">#${i+1}</span>
       <button class="del">×</button>`;
+    r.querySelector('.bn').textContent=cl.name;
     r.querySelector('.del').onclick=()=>{im.boxes.splice(i,1);renderAll();save();};
     el.appendChild(r);
   });
@@ -922,12 +874,8 @@ function renderStrip(){
   images.forEach(im=>{
     const f=document.createElement('div');f.className='frame'+(im.id===activeId?' active':'');
     const n=im.boxes.length;
-    const subj=(im.subject||'').trim();
     const badge=im.negative?'<span class="cnt has">🚫 רקע</span>':`<span class="cnt ${n?'has':'none'}">${n?n+' ✓':'0'}</span>`;
-    f.innerHTML=`<img src="${im.dataURL}">
-      ${badge}
-      ${subj?`<span class="subj">${subj}</span>`:''}
-      <button class="x">×</button>`;
+    f.innerHTML=`<img src="${im.dataURL}">${badge}<button class="x">×</button>`;
     f.querySelector('img').onclick=()=>{activeId=im.id;renderAll();};
     f.querySelector('.x').onclick=e=>{e.stopPropagation();
       images=images.filter(x=>x.id!==im.id);
@@ -942,75 +890,14 @@ function renderStats(){
   const totalBoxes=images.reduce((s,i)=>s+i.boxes.length,0);
   const labeled=images.filter(i=>i.boxes.length).length;
   const neg=images.filter(i=>i.negative).length;
-  const stats=[
-    {v:images.length,l:'תמונות'},
-    {v:labeled,l:'מתויגות'},
-    {v:neg,l:'רקע'},
-    {v:totalBoxes,l:'מלבנים'},
-  ];
-  stats.forEach(s=>{const d=document.createElement('div');d.className='stat';
+  [{v:images.length,l:'תמונות'},{v:labeled,l:'מתויגות'},{v:neg,l:'רקע'},{v:totalBoxes,l:'מלבנים'}]
+  .forEach(s=>{const d=document.createElement('div');d.className='stat';
     d.innerHTML=`<div class="v">${s.v}</div><div class="l">${s.l}</div>`;el.appendChild(d);});
 }
 
-function renderAll(){renderStage();renderBoxList();renderStrip();renderStats();updateGuide();}
+function renderAll(){renderStage();renderBoxList();renderStrip();renderStats();}
 
-// ---------- coach ----------
-function updateGuide(){
-  const total=images.length;
-  const boxes=images.reduce((s,i)=>s+i.boxes.length,0);
-  const labeled=images.filter(i=>i.boxes.length).length;
-  const STEPS=['סרטונים','תיוג','שמירה','אימון','בדיקה'];
-  let step, msg, ctaLabel=null, ctaFn=null;
-
-  if(tfModel){
-    step=5;
-    msg='המודל טעון! 🎉\nהעלו תמונה או סרטון *חדשים* של רחוב — תראו מסגרות סביב המפגעים + אחוז ביטחון.\n\nביטחון נמוך? אספו עוד סרטונים מגוונים, שתפו למאגר, ואמנו את מודל-העל המשותף.';
-    ctaLabel='⬆️ העלה תמונת בדיקה'; ctaFn=()=>$('#testUploadBtn')?.click();
-  } else if(exported){
-    step=4;
-    msg='הדאטהסט ירד! ✅\nעכשיו האימון (GPU חינם בענן):\n\n1. פתחו את מחברת האימון\n2. Runtime → Run all\n3. העלו את ה-ZIP\n4. ~10 דק׳ → יורד yolo_tfjs_model.zip\n5. חזרו לקטע "6 · בדיקה" וטענו אותו.\n\n💡 רוצים מודל חזק יותר? שתפו למאגר ומזגו עם צוותים אחרים!';
-    ctaLabel='☁️ פתח מחברת אימון'; ctaFn=()=>$('#colabBtn')?.click();
-  } else if(total===0){
-    step=1;
-    msg='ברוכים הבאים ל-thinkCV! 👁️\nנלמד מחשב לזהות מפגעים עירוניים.\n\nכתבו שם צוות + איזה מפגע מתעדים, ואז העלו סרטונים קצרים של המפגע מכל הכיוונים.';
-    ctaLabel='🎬 בחר סרטונים'; ctaFn=()=>$('#videoBtn')?.click();
-  } else if(total<MIN_IMAGES){
-    step=1;
-    msg='יש '+total+' תמונות 📸\nכדאי לפחות '+MIN_IMAGES+' — כמה שיותר מגוון (זוויות, תאורה, רקעים), המודל חכם יותר.';
-    ctaLabel='🎬 עוד סרטונים'; ctaFn=()=>$('#videoBtn')?.click();
-  } else if(boxes===0){
-    step=2;
-    msg='מצוין, '+total+' תמונות! ✍️\nעכשיו החלק החשוב — תיוג: בחרו סוג מפגע וגררו מלבן צמוד סביבו בכל תמונה.\n\nזרקו תמונות לא טובות (✕ בפס), וסמנו ~רבע מהתמונות כ"🚫 רקע".';
-  } else if(labeled<total){
-    step=2;
-    msg='תויגו '+labeled+' מתוך '+total+'.\nהמשיכו עד שלכולן יש ✓ ירוק או 🚫 רקע. תמונה לא מתויגת לא נכנסת לדאטהסט.';
-  } else {
-    step=3;
-    msg='הכל מתויג! 💪 ('+boxes+' מלבנים)\nשמרו את הדאטהסט (ZIP) — ואם אתם בהאקתון, שתפו אותו למאגר המשותף!';
-    ctaLabel='📦 שמור דאטהסט'; ctaFn=()=>$('#exportBtn')?.click();
-  }
-
-  $('#guideStep').textContent='שלב '+step+' מתוך 5 · '+STEPS[step-1];
-  $('#guideMsg').textContent=msg;
-  $('#guideBar').style.width=(step/5*100)+'%';
-
-  const cl=$('#guideChecklist');
-  cl.innerHTML=STEPS.map((s,i)=>{
-    const n=i+1;const c=n<step?'done':(n===step?'cur':'');
-    const mark=n<step?'✓':(n===step?'➤':'○');
-    return `<li class="${c}">${mark} ${s}</li>`;
-  }).join('');
-
-  const cta=$('#guideCta');
-  if(ctaLabel){cta.style.display='';cta.textContent=ctaLabel;cta.onclick=ctaFn;}
-  else cta.style.display='none';
-}
-$('#guideHead').onclick=()=>{
-  const g=$('#guide');g.classList.toggle('collapsed');
-  $('#guideToggle').textContent=g.classList.contains('collapsed')?'▴':'▾';
-};
-
-// ---------- YOLO export (scene-aware train/val split) ----------
+// ---------- YOLO export ----------
 function splitTrainVal(items){
   if(items.length<5) return {flat:true, valSet:[]};
   const groups={};
@@ -1032,31 +919,24 @@ function splitTrainVal(items){
 
 async function buildDatasetZip(){
   const labeled=images.filter(i=>i.boxes.length || i.negative);
-  const negCount=images.filter(i=>i.negative).length;
-  if(!labeled.length){alert('אין תמונות מתויגות. סמנו לפחות מלבן אחד.');return null;}
-  const name=($('#studentName').value.trim()||'team').replace(/\s+/g,'_');
-
+  if(!labeled.length){toast('אין תמונות מתויגות — סמנו לפחות מלבן אחד.');return null;}
+  if(!CLASSES.length){toast('הוסיפו לפחות קטגוריה אחת.');return null;}
+  const name=(activeStudent?.name||'user').replace(/\s+/g,'_');
   const split=splitTrainVal(labeled);
   const valIds=new Set(split.valSet.map(im=>im.id));
   const zip=new JSZip();
-
   const yaml=`# YOLO dataset - thinkCV Hakaton\n`+
     `path: .\n`+
     (split.flat ? `train: images\nval: images\n` : `train: images/train\nval: images/val\n`)+
     `\nnc: ${CLASSES.length}\n`+
     `names: [${CLASSES.map(c=>`'${c.name}'`).join(', ')}]\n`;
   zip.file('data.yaml',yaml);
-  zip.file('README.txt',
-    `thinkCV Hakaton — YOLO dataset\nצוות: ${$('#studentName').value||'-'}\n`+
-    `תמונות: ${labeled.length} · מלבנים: ${labeled.reduce((s,i)=>s+i.boxes.length,0)} · רקע: ${negCount}\n`+
-    `אימון: yolo detect train data=data.yaml model=yolov8n.pt epochs=100 imgsz=640 patience=20\n`);
-
   const slug=s=>(s||'').trim().replace(/\s+/g,'-').replace(/[^\w֐-׿-]/g,'')||'';
   const usedNames={};
   let idx=0, count=0;
   for(const im of labeled){
     const subj=slug(im.subject);
-    const base=subj?`${subj}_${name}`:name;
+    const base=subj?`${subj}_${slug(name)||'user'}`:(slug(name)||'user');
     let fn=`${base}_${String(idx).padStart(3,'0')}`;
     while(usedNames[fn]) fn=`${base}_${String(++idx).padStart(3,'0')}`;
     usedNames[fn]=1;
@@ -1065,8 +945,7 @@ async function buildDatasetZip(){
     zip.file(`images${seg}/${fn}.jpg`, b64, {base64:true});
     const lines=im.negative ? '' : im.boxes.map(b=>{
       const xc=(b.x+b.w/2).toFixed(6), yc=(b.y+b.h/2).toFixed(6);
-      const w=b.w.toFixed(6), h=b.h.toFixed(6);
-      return `${b.cls} ${xc} ${yc} ${w} ${h}`;
+      return `${b.cls} ${xc} ${yc} ${b.w.toFixed(6)} ${b.h.toFixed(6)}`;
     }).join('\n');
     zip.file(`labels${seg}/${fn}.txt`, lines?lines+'\n':'');
     idx++; count++;
@@ -1082,23 +961,20 @@ $('#exportBtn').onclick=async()=>{
   $('#exportBtn').innerHTML=_orig;$('#exportBtn').disabled=false;
   if(!built) return;
   const a=document.createElement('a');a.href=URL.createObjectURL(built.blob);
-  a.download=`thinkcv_dataset_${built.name}.zip`;a.click();
+  a.download=`thinkcv_dataset_${Date.now()}.zip`;a.click();
   lastExportBlob=built;
   exported=true;
   $('#shareBtn').disabled=false;
-  updateGuide();
 };
 
-// ---------- share to the pool ----------
 $('#shareBtn').onclick=async()=>{
   let built=lastExportBlob;
   if(!built){ built=await buildDatasetZip(); if(!built) return; lastExportBlob=built; }
   const st=$('#shareState'); st.style.display=''; st.textContent='☁️ מעלה…';
   $('#shareBtn').disabled=true;
   try{
-    if(!AUTH.user){ throw new Error('צריך להתחבר כדי לשתף'); }
-    // storage keys must be ASCII-safe — Hebrew names live in the DB row
-    const path=`datasets/ds_${Date.now()}_${Math.random().toString(36).slice(2,8)}.zip`;
+    if(!AUTH.user) throw new Error('צריך להתחבר כדי לשתף');
+    const path=`datasets/ds_${Date.now()}_${Math.random().toString(36).slice(2,8)}.zip`;  // ASCII-only key
     const up=await sb.storage.from('thinkcv').upload(path, built.blob, {contentType:'application/zip'});
     if(up.error) throw up.error;
     const ins=await sb.from('thinkcv_datasets').insert({
@@ -1111,13 +987,13 @@ $('#shareBtn').onclick=async()=>{
       image_count:built.count,
     });
     if(ins.error) throw ins.error;
-    st.textContent=`🌐 שותף למאגר ✓ (${built.count} תמונות)`;
+    st.textContent=`🌐 שותף ✓ (${built.count} תמונות)`;
     loadPool();
-  }catch(e){ console.error(e); st.textContent='⚠️ השיתוף נכשל: '+(e.message||e); }
+  }catch(e){ console.error(e); st.textContent='⚠️ נכשל: '+(e.message||e); }
   $('#shareBtn').disabled=false;
 };
 
-// ---------- shared pool: list + merge ----------
+// ---------- shared pool ----------
 let poolRows=[];
 async function loadPool(){
   const st=$('#poolState'); st.textContent='טוען…';
@@ -1128,16 +1004,15 @@ async function loadPool(){
   if(error){ st.textContent='שגיאה'; el.innerHTML='<span class="warn">'+error.message+'</span>'; return; }
   poolRows=data||[];
   st.textContent=poolRows.length+' דאטהסטים';
-  if(!poolRows.length){ el.innerHTML='<span class="muted" style="font-size:13px">עוד אין דאטהסטים במאגר — היו הראשונים לשתף! 🚀</span>'; updateMergeBtn(); return; }
+  if(!poolRows.length){ el.innerHTML='<span class="muted" style="font-size:13px">עוד אין דאטהסטים — היו הראשונים לשתף! 🚀</span>'; updateMergeBtn(); return; }
   poolRows.forEach(r=>{
     const d=document.createElement('label'); d.className='pool-row';
     const when=new Date(r.created_at).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
     const cls=(Array.isArray(r.classes)?r.classes:[]).join(' · ');
     d.innerHTML=`<input type="checkbox" data-id="${r.id}">
-      <div class="meta">
-        <div class="nm">${r.team_name}${r.student_name?` · ${r.student_name}`:''}${r.subject?` — <span style="font-weight:400">${r.subject}</span>`:''}</div>
-        <div class="cls">${r.image_count} תמונות · ${cls||'—'} · ${when}</div>
-      </div>`;
+      <div class="meta"><div class="nm"></div><div class="cls"></div></div>`;
+    d.querySelector('.nm').textContent=`${r.team_name}${r.student_name?' · '+r.student_name:''}${r.subject?' — '+r.subject:''}`;
+    d.querySelector('.cls').textContent=`${r.image_count} תמונות · ${cls||'—'} · ${when}`;
     d.querySelector('input').onchange=updateMergeBtn;
     el.appendChild(d);
   });
@@ -1149,7 +1024,6 @@ function selectedPool(){
 function updateMergeBtn(){ $('#mergeBtn').disabled=selectedPool().length<1; }
 $('#poolRefreshBtn').onclick=loadPool;
 
-// merge: union classes across datasets, remap label indices, prefix per team
 function parseYamlNames(y){
   const m=y.match(/names:\s*\[([^\]]*)\]/);
   if(!m) return [];
@@ -1171,8 +1045,8 @@ $('#mergeBtn').onclick=async()=>{
       const zip=await JSZip.loadAsync(await res.blob());
       const yamlFile=Object.keys(zip.files).find(n=>n.endsWith('data.yaml'));
       const names=yamlFile?parseYamlNames(await zip.files[yamlFile].async('text')):[];
-      const map=names.map(addName);   // old idx → union idx
-      const teamSlug=(row.team_name||'team').replace(/\s+/g,'-').replace(/[^\w֐-׿-]/g,'')+'-'+s;
+      const map=names.map(addName);
+      const teamSlug='t'+s;
       const files=Object.keys(zip.files).filter(n=>!zip.files[n].dir);
       for(const n of files){
         const isImg=/^images\//.test(n)&&/\.(jpe?g|png)$/i.test(n);
@@ -1183,14 +1057,12 @@ $('#mergeBtn').onclick=async()=>{
         const newBase=`${teamSlug}_${base}`;
         merged.file(`images/${seg}/${newBase}${ext}`, await zip.files[n].async('uint8array'));
         totalImgs++; if(seg==='val') valCount++;
-        // matching label (may live in labels/, labels/train/, labels/val/)
         const labelCands=[
           n.replace(/^images\//,'labels/').replace(/\.(jpe?g|png)$/i,'.txt'),
           `labels/${base}.txt`, `labels/train/${base}.txt`, `labels/val/${base}.txt`,
         ];
         let lbl='';
         for(const lc of labelCands){ if(zip.files[lc]){ lbl=await zip.files[lc].async('text'); break; } }
-        // remap class indices to the union list
         const remapped=lbl.split('\n').map(line=>{
           const t=line.trim().split(/\s+/);
           if(t.length<5) return '';
@@ -1201,28 +1073,25 @@ $('#mergeBtn').onclick=async()=>{
         }).filter(Boolean).join('\n');
         merged.file(`labels/${seg}/${newBase}.txt`, remapped?remapped+'\n':'');
       }
-      prog.textContent=`מוזג ${s+1}/${sel.length} ✓`;
       await new Promise(r=>setTimeout(r,0));
     }
-    const yaml=`# thinkCV merged dataset (${sel.length} teams)\n`+
+    const yaml=`# thinkCV merged dataset (${sel.length} sets)\n`+
       `path: .\ntrain: images/train\nval: ${valCount>0?'images/val':'images/train'}\n\n`+
       `nc: ${union.length}\nnames: [${union.map(n=>`'${n}'`).join(', ')}]\n`;
     merged.file('data.yaml',yaml);
-    merged.file('README.txt',`thinkCV merged dataset\nצוותים: ${sel.map(r=>r.team_name).join(', ')}\nתמונות: ${totalImgs}\nקלאסים: ${union.join(', ')}\n`);
     prog.textContent='אורז ZIP מאוחד…';
     const blob=await merged.generateAsync({type:'blob'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-    a.download=`thinkcv_merged_${sel.length}teams.zip`;a.click();
-    prog.innerHTML=`✅ <b>ירד דאטהסט מאוחד</b>: ${totalImgs} תמונות · ${union.length} קלאסים (${union.join(' · ')}) — העלו אותו ל-Colab ואמנו את מודל-העל! 🚀`;
+    a.download=`thinkcv_merged_${sel.length}sets.zip`;a.click();
+    prog.innerHTML=`✅ <b>ירד דאטהסט מאוחד</b>: ${totalImgs} תמונות · ${union.length} קטגוריות (${union.join(' · ')}) — העלו ל-Colab ואמנו! 🚀`;
   }catch(e){ console.error(e); prog.textContent='⚠️ שגיאה במיזוג: '+(e.message||e); }
   btn.disabled=false;
 };
 
-$('#studentName').oninput=()=>save();
 $('#colabBtn').onclick=()=>{ window.open(COLAB,'_blank'); };
 
 // ========== INFERENCE (TF.js) ==========
-let tfModel=null, modelInputSize=640;
+let tfModel=null, modelInputSize=640, modelNC=0;
 
 $('#loadModelBtn').onclick=()=>$('#modelFile').click();
 $('#modelFile').onchange=async(e)=>{ if(e.target.files[0]) loadModelFromFile(e.target.files[0]); };
@@ -1247,11 +1116,10 @@ async function loadModelFromFile(f){
     tfModel=await tf.loadGraphModel(makeLoader(modelArtifacts, fileMap));
     const inShape=tfModel.inputs[0].shape;
     modelInputSize = inShape[1]===3 ? inShape[2] : inShape[1];
+    modelNC=0;
     $('#modelStatus').innerHTML='<span class="status-dot live"></span>מודל טעון';
     $('#testUploadBtn').disabled=false;
-    $('#testVideoBtn').disabled=false;
     $('#testTrainBtn').disabled=!images.length;
-    updateGuide();
   }catch(err){
     console.error(err);
     $('#modelStatus').innerHTML='<span class="status-dot"></span>שגיאה: '+err.message;
@@ -1287,28 +1155,26 @@ function makeLoader(modelArtifacts, fileMap){
 }
 
 $('#testUploadBtn').onclick=()=>$('#testFile').click();
-$('#testVideoBtn').onclick=()=>$('#testFile').click();
 $('#testTrainBtn').onclick=()=>{
-  if(!tfModel){alert('טען מודל קודם');return;}
-  if(!images.length){alert('אין תמונות אימון במכשיר הזה');return;}
+  if(!tfModel){toast('טענו מודל קודם');return;}
+  if(!images.length){toast('אין תמונות אימון במכשיר הזה');return;}
   const im=images[Math.floor(Math.random()*images.length)];
   runDetection(im.dataURL);
 };
-$('#testFile').onchange=e=>{ if(e.target.files[0]) handleTestFile(e.target.files[0]); };
+$('#testFile').onchange=e=>{ if(e.target.files[0]) handleTestFile(e.target.files[0]); e.target.value=''; };
 wireDrop('testDrop', files=>{ if(files[0]) handleTestFile(files[0]); });
 $('#testDrop').addEventListener('click',()=>$('#testFile').click());
 
 function handleTestFile(f){
-  if(!tfModel){alert('טען מודל קודם');return;}
+  if(!tfModel){toast('טענו מודל קודם');return;}
   if(f.type.startsWith('video/')){ testVideo(f); return; }
-  if(!f.type.startsWith('image/')){alert('צריך תמונה או סרטון');return;}
+  if(!f.type.startsWith('image/')){toast('צריך תמונה או סרטון');return;}
   $('#vidGrid').innerHTML='';
   const r=new FileReader();
   r.onload=ev=>runDetection(ev.target.result);
   r.readAsDataURL(f);
 }
 
-// core detect on a dataURL → boxes in normalized coords + top guess
 async function detectOnDataURL(dataURL){
   const conf=parseFloat($('#confInput').value)||0.25;
   const img=new Image();
@@ -1321,7 +1187,7 @@ async function detectOnDataURL(dataURL){
   const input=tf.tidy(()=>{
     let t=tf.browser.fromPixels(img).toFloat();
     t=tf.image.resizeBilinear(t,[nh,nw]);
-    t=t.pad([[padY,S-nh-padY],[padX,S-nw-padX],[0,0]], 114);   // YOLO grey letterbox
+    t=t.pad([[padY,S-nh-padY],[padX,S-nw-padX],[0,0]], 114);
     return t.div(255).expandDims(0);
   });
   let out=tfModel.execute(input);
@@ -1332,7 +1198,9 @@ async function detectOnDataURL(dataURL){
   const arr=await data.array();
   input.dispose(); out.dispose(); sq.dispose(); data.dispose();
 
-  const nc=CLASSES.length;
+  // nc from the model itself → works even if the local class list differs
+  modelNC=Math.max(0,(arr[0]?arr[0].length:4)-4);
+  const nc=modelNC;
   const mapB=(cx,cy,w,h,bestC,best)=>({
     x:((cx-w/2)-padX)/scale/iw, y:((cy-h/2)-padY)/scale/ih,
     w:(w/scale)/iw, h:(h/scale)/ih, cls:bestC, score:best
@@ -1348,50 +1216,48 @@ async function detectOnDataURL(dataURL){
   boxes=nms(boxes,0.45);
   const lowGuess = boxes.length===0;
   if(lowGuess && top) boxes=[top];
-  return {boxes, lowGuess, top, img};
+  return {boxes, lowGuess, top};
 }
 
 async function runDetection(dataURL){
-  if(!tfModel){alert('טען מודל קודם');return;}
+  if(!tfModel){toast('טענו מודל קודם');return;}
   const {boxes, lowGuess, top}=await detectOnDataURL(dataURL);
   const stage=$('#testStage');
-  stage.innerHTML=`<img id="testImg" src="${dataURL}"><canvas id="testOverlay"></canvas>`;
-  const img=$('#testImg');
+  stage.innerHTML=`<img id="testImg"><canvas id="testOverlay"></canvas>`;
+  const img=$('#testImg'); img.src=dataURL;
   await new Promise(r=>{ if(img.complete) r(); else img.onload=r; });
   const cv=$('#testOverlay'); cv.width=img.clientWidth; cv.height=img.clientHeight;
   drawDetections(cv,boxes);
   renderDetList(boxes, lowGuess, top);
 }
 
-// video test: sample frames, run each, show annotated grid + best in main stage
 async function testVideo(file){
   const grid=$('#vidGrid'); grid.innerHTML='';
-  const prog=$('#mergeProgress');
   const v=$('#vidScratch');
   const url=URL.createObjectURL(file); v.src=url;
   try{
     await new Promise((res,rej)=>{ v.onloadedmetadata=()=>res(); v.onerror=()=>rej(new Error('הווידאו לא נטען')); });
     let dur=v.duration;
-    if(!isFinite(dur)||dur<=0){ await new Promise(res=>{ v.onseeked=()=>res(); v.currentTime=1e7; }); dur=v.duration; }
+    if(!isFinite(dur)||dur<=0){ await new Promise(res=>{ const to=setTimeout(res,2000); v.onseeked=()=>{clearTimeout(to);res();}; v.currentTime=1e7; }); dur=v.duration; }
+    if(!v.videoWidth){ toast('הדפדפן לא מפענח את הווידאו (קודק)'); return; }
     const N=10;
-    const cw=Math.min(v.videoWidth||640,640);
-    const ch=Math.round((v.videoHeight||480)*cw/(v.videoWidth||640));
+    const cw=Math.min(v.videoWidth,640);
+    const ch=Math.round(v.videoHeight*cw/v.videoWidth);
     const cv=document.createElement('canvas'); cv.width=cw; cv.height=ch;
     const ctx=cv.getContext('2d');
-    const seek=t=>new Promise(res=>{ v.onseeked=()=>res(); v.currentTime=t; });
+    const seek=t=>new Promise(res=>{ let done=false; const fin=()=>{if(!done){done=true;clearTimeout(to);res();}}; const to=setTimeout(fin,1500); v.onseeked=fin; try{v.currentTime=t;}catch(e){fin();} });
     let bestFrame=null;
     for(let i=0;i<N;i++){
-      await seek(0.2 + (dur-0.4)*(i/(N-1)));
+      await seek(0.2 + Math.max(dur-0.4,0.1)*(i/(N-1)));
       ctx.drawImage(v,0,0,cw,ch);
       const frameURL=cv.toDataURL('image/jpeg',0.85);
       const {boxes, top}=await detectOnDataURL(frameURL);
-      // annotate onto an offscreen canvas
       const ac=document.createElement('canvas'); ac.width=cw; ac.height=ch;
       const actx=ac.getContext('2d');
       const fimg=new Image(); await new Promise(r=>{fimg.onload=r;fimg.src=frameURL;});
       actx.drawImage(fimg,0,0);
       boxes.forEach(b=>{
-        const cl=CLASSES[b.cls]||CLASSES[0];
+        const cl=clsOf(b.cls);
         actx.lineWidth=3;actx.strokeStyle=cl.color;
         actx.strokeRect(b.x*cw,b.y*ch,b.w*cw,b.h*ch);
       });
@@ -1406,7 +1272,7 @@ async function testVideo(file){
       await new Promise(r=>setTimeout(r,0));
     }
     if(bestFrame) runDetection(bestFrame.frameURL);
-  }catch(e){ console.error(e); alert('שגיאה בבדיקת הסרטון: '+(e.message||e)); }
+  }catch(e){ console.error(e); toast('שגיאה בבדיקת הסרטון: '+(e.message||e)); }
   finally{ URL.revokeObjectURL(url); v.removeAttribute('src'); }
 }
 
@@ -1430,7 +1296,7 @@ function drawDetections(cv,boxes){
   const ctx=cv.getContext('2d');const W=cv.width,H=cv.height;
   ctx.clearRect(0,0,W,H);
   boxes.forEach(b=>{
-    const cl=CLASSES[b.cls]||CLASSES[0];
+    const cl=clsOf(b.cls);
     ctx.lineWidth=2;ctx.strokeStyle=cl.color;
     ctx.strokeRect(b.x*W,b.y*H,b.w*W,b.h*H);
     const lbl=`${cl.name} ${Math.round(b.score*100)}%`;
@@ -1447,10 +1313,10 @@ function renderDetList(boxes, lowGuess, top){
   const best = list.length ? Math.max(...list.map(b=>b.score)) : 0;
   const pct = Math.round(best*100);
   let color, msg, emoji;
-  if(best>=0.6){ color='var(--ok)'; emoji='🎯'; msg='המודל בטוח! אימנתם אותו מצוין.'; }
-  else if(best>=0.25){ color='var(--ok)'; emoji='🙂'; msg='המודל מזהה — אבל עוד לומד. עוד תמונות = ביטחון גבוה יותר.'; }
-  else if(best>=0.05){ color='var(--warn)'; emoji='🤔'; msg='המודל מנחש. צריך עוד הרבה תמונות מגוונות.'; }
-  else { color='var(--danger)'; emoji='🐣'; msg='המודל עוד תינוק. תאכילו אותו בעוד סרטונים — ומזגו עם המאגר המשותף!'; }
+  if(best>=0.6){ color='var(--ok)'; emoji='🎯'; msg='המודל בטוח! אימנתם מצוין.'; }
+  else if(best>=0.25){ color='var(--ok)'; emoji='🙂'; msg='מזהה — ועוד לומד. עוד תמונות = ביטחון גבוה יותר.'; }
+  else if(best>=0.05){ color='var(--warn)'; emoji='🤔'; msg='מנחש. צריך עוד תמונות מגוונות.'; }
+  else { color='var(--danger)'; emoji='🐣'; msg='עוד תינוק. תאכילו אותו בעוד סרטונים — או מזגו עם המאגר!'; }
   const meter=document.createElement('div');
   meter.style.cssText='margin-bottom:10px';
   meter.innerHTML=`
@@ -1463,25 +1329,20 @@ function renderDetList(boxes, lowGuess, top){
     </div>
     <div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5">${msg}</div>`;
   el.appendChild(meter);
-  if(lowGuess && list.length){
-    const n=document.createElement('div');
-    n.style.cssText='font-size:11px;color:var(--muted);margin-bottom:6px;line-height:1.5';
-    n.innerHTML='זה הניחוש הכי טוב של המודל כרגע. מיזוג עם צוותים נוספים במאגר = קפיצה בביטחון.';
-    el.appendChild(n);
-  }
   list.forEach(b=>{
-    const cl=CLASSES[b.cls]||CLASSES[0];const r=document.createElement('div');r.className='boxrow';
-    r.innerHTML=`<span class="sw" style="background:${cl.color}"></span>${cl.name}
+    const cl=clsOf(b.cls);const r=document.createElement('div');r.className='boxrow';
+    r.innerHTML=`<span class="sw" style="background:${cl.color}"></span><span class="dn"></span>
       <span class="muted" style="margin-inline-start:auto">${Math.round(b.score*100)}%</span>`;
+    r.querySelector('.dn').textContent=cl.name;
     el.appendChild(r);
   });
 }
 
 // ---------- init ----------
 renderClasses();renderAll();
-routeUI();          // everything gated behind login
-initSession();      // restore session → student picker → workspace
-loadPool();         // the shared pool is public-read
+routeUI();
+initSession();
+loadPool();
 $('#subjectName').oninput=()=>save();
 </script>
 </body>
