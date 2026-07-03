@@ -150,6 +150,19 @@
     display:grid;place-items:center;font-weight:800;color:#03121B;flex-shrink:0}
   .stu-row .nm{flex:1;font-weight:600}
 
+  /* YOLO experience — tag flash, scan sweep, progress */
+  .stage.flash{animation:tagflash .55s ease}
+  @keyframes tagflash{0%{box-shadow:0 0 0 2px rgba(34,211,238,.9),0 0 26px 4px rgba(34,211,238,.6)}100%{box-shadow:0 0 0 0 rgba(34,211,238,0)}}
+  .stage.scanning::after{content:'';position:absolute;left:0;right:0;top:0;height:34%;pointer-events:none;
+    background:linear-gradient(180deg,transparent,rgba(34,211,238,.28),rgba(167,139,250,.18),transparent);
+    animation:scan 1s linear infinite}
+  @keyframes scan{0%{transform:translateY(-110%)}100%{transform:translateY(340%)}}
+  .tagbar{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:12.5px;color:var(--muted)}
+  .tagbar .bar{flex:1;height:9px;border-radius:99px;background:#ffffff10;overflow:hidden;border:1px solid var(--line)}
+  .tagbar .bar>i{display:block;height:100%;width:0%;border-radius:99px;
+    background:linear-gradient(90deg,var(--neon),var(--vio),var(--mag));transition:width .45s cubic-bezier(.2,.8,.2,1)}
+  .tagbar b{color:var(--ink);font-family:"Space Grotesk","Rubik",sans-serif}
+
   /* error toast — no more silent failures */
   #toast{position:fixed;bottom:16px;right:16px;left:16px;z-index:200;max-width:520px;margin:0 auto;
     background:#2a1215;border:1px solid var(--danger);color:#ffd9d9;border-radius:13px;padding:11px 15px;
@@ -223,6 +236,37 @@
   </div>
 </div>
 
+<!-- admin console -->
+<div class="overlay" id="adminScreen" style="display:none;place-items:start center;overflow-y:auto;padding:34px 16px">
+  <div class="auth-card" style="max-width:780px;width:100%">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div>
+        <div style="font-weight:800;font-size:21px">👑 מסך ניהול</div>
+        <div class="muted" style="font-size:13px">כל האימונים של כל המשתתפים — במקום אחד.</div>
+      </div>
+      <button class="ghost" id="admClose">✕ סגור</button>
+    </div>
+
+    <div class="stat-grid" id="admStats" style="margin:16px 0"></div>
+
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <b style="font-size:15px">דאטהסטים ששותפו</b>
+      <span style="flex:1"></span>
+      <button class="ghost" id="admRefresh" style="font-size:12.5px">🔄 רענן</button>
+      <button class="ghost" id="admAll" style="font-size:12.5px">בחר הכל</button>
+      <button class="hot" id="admMerge" disabled style="font-size:13px">⚡ מזג הכל לאימון-על</button>
+    </div>
+    <div id="admList" style="max-height:38vh;overflow-y:auto"></div>
+    <div id="admMergeProg" class="hint" style="font-size:12.5px;margin-top:8px"></div>
+
+    <div style="margin-top:18px">
+      <b style="font-size:15px">משתתפים רשומים</b>
+      <div id="admStudents" class="muted" style="font-size:13px;margin-top:8px;max-height:20vh;overflow-y:auto"></div>
+    </div>
+    <div class="muted" style="font-size:11.5px;margin-top:12px">💡 אימון-על: כשכולם מאמנים את אותו אובייקט, מיזוג כל הדאטהסטים = מאות תמונות → מודל חד משמעותית. המיזוג מאחד קטגוריות אוטומטית.</div>
+  </div>
+</div>
+
 <div class="wrap" style="visibility:hidden">
   <header class="hero">
     <div class="logo">thinkCV <span class="zap">⚡</span> Hakaton</div>
@@ -244,6 +288,8 @@
       <span class="muted" id="idClass"></span>
     </span>
     <button class="ghost" id="switchStuBtn" style="font-size:12px;padding:6px 11px">🔄 החלפה</button>
+    <button class="ghost" id="appLogoutBtn" style="font-size:12px;padding:6px 11px">🚪 התנתקות</button>
+    <button class="hot" id="adminBtn" style="display:none;font-size:12px;padding:6px 13px">👑 ניהול</button>
     <span id="saveState" class="pill">נשמר אוטומטית</span>
     <span style="flex:1"></span>
     <span id="cloudStatus" class="pill" style="display:none"></span>
@@ -309,6 +355,11 @@
     <div class="stage-wrap">
       <div class="stage-col">
         <div class="stage" id="stage"><div class="empty">העלו סרטון או תמונות בשלב 1 — הפריימים יופיעו כאן לתיוג</div></div>
+        <div class="tagbar" id="tagbar" style="display:none">
+          <span>התקדמות תיוג</span>
+          <div class="bar"><i id="tagbarFill"></i></div>
+          <b id="tagbarLbl">0/0</b>
+        </div>
         <div class="strip" id="strip"></div>
       </div>
       <div class="side-col">
@@ -418,7 +469,8 @@ window.addEventListener('unhandledrejection',e=>toast('שגיאה: '+(e.reason&&
 const clsOf=i=>CLASSES[i]||{name:'קטגוריה '+(i+1),color:CLASS_PALETTE[i%CLASS_PALETTE.length]};
 
 // ---------- auth + per-student isolation ----------
-const AUTH={ user:null, className:'' };
+const ADMINS=['ariel@ao-fin.co.il','dahanlid555@gmail.com'];
+const AUTH={ user:null, className:'', admin:false };
 let activeStudent=null;
 
 function routeUI(){
@@ -453,12 +505,75 @@ $('#authGo').onclick=async()=>{
 };
 
 $('#logoutBtn').onclick=async()=>{ await sb.auth.signOut(); location.reload(); };
+$('#appLogoutBtn').onclick=async()=>{ await sb.auth.signOut(); location.reload(); };
+
+// ---------- admin console ----------
+$('#adminBtn').onclick=()=>{ $('#adminScreen').style.display='grid'; loadAdmin(); };
+$('#admClose').onclick=()=>{ $('#adminScreen').style.display='none'; };
+$('#admRefresh').onclick=()=>loadAdmin();
+$('#admAll').onclick=()=>{ document.querySelectorAll('#admList input[type=checkbox]').forEach(c=>c.checked=true); updateAdmMerge(); };
+
+let admRows=[];
+function updateAdmMerge(){ $('#admMerge').disabled=[...document.querySelectorAll('#admList input:checked')].length<1; }
+function admSelected(){ return [...document.querySelectorAll('#admList input:checked')].map(i=>admRows.find(r=>r.id===i.dataset.id)).filter(Boolean); }
+
+async function loadAdmin(){
+  const list=$('#admList'); list.innerHTML='<span class="muted" style="font-size:13px">טוען…</span>';
+  const [ds,stu]=await Promise.all([
+    sb.from('thinkcv_datasets').select('id, team_name, student_name, subject, classes, zip_path, image_count, created_at').order('created_at',{ascending:false}).limit(300),
+    sb.from('thinkcv_students').select('id, name, owner, created_at').order('created_at',{ascending:false}).limit(500),
+  ]);
+  admRows=ds.data||[];
+  const students=stu.data||[];
+  // stats
+  const owners=new Set(students.map(s=>s.owner));
+  const totalImgs=admRows.reduce((s,r)=>s+(r.image_count||0),0);
+  $('#admStats').innerHTML='';
+  [{v:owners.size,l:'קבוצות'},{v:students.length,l:'משתתפים'},{v:admRows.length,l:'דאטהסטים'},{v:totalImgs,l:'תמונות במאגר'}]
+    .forEach(s=>{const d=document.createElement('div');d.className='stat';
+      d.innerHTML=`<div class="v">${s.v}</div><div class="l">${s.l}</div>`;$('#admStats').appendChild(d);});
+  // datasets
+  list.innerHTML='';
+  if(!admRows.length){ list.innerHTML='<span class="muted" style="font-size:13px">אף אחד עוד לא שיתף דאטהסט.</span>'; }
+  admRows.forEach(r=>{
+    const d=document.createElement('label'); d.className='pool-row';
+    const when=new Date(r.created_at).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    d.innerHTML=`<input type="checkbox" data-id="${r.id}">
+      <div class="meta"><div class="nm"></div><div class="cls"></div></div>
+      <button class="ghost admdel" style="font-size:12px;color:var(--danger)">מחק</button>`;
+    d.querySelector('.nm').textContent=`${r.team_name}${r.student_name?' · '+r.student_name:''}${r.subject?' — '+r.subject:''}`;
+    d.querySelector('.cls').textContent=`${r.image_count} תמונות · ${(Array.isArray(r.classes)?r.classes:[]).join(' · ')||'—'} · ${when}`;
+    d.querySelector('input').onchange=updateAdmMerge;
+    d.querySelector('.admdel').onclick=async(e)=>{
+      e.preventDefault();
+      if(!confirm('למחוק את הדאטהסט של '+r.team_name+'?')) return;
+      await sb.storage.from('thinkcv').remove([r.zip_path]);
+      const del=await sb.from('thinkcv_datasets').delete().eq('id',r.id);
+      if(del.error) toast('מחיקה נכשלה: '+del.error.message); else { loadAdmin(); loadPool(); }
+    };
+    list.appendChild(d);
+  });
+  updateAdmMerge();
+  // roster grouped by owner
+  const byOwner={};
+  students.forEach(s=>{ (byOwner[s.owner]=byOwner[s.owner]||[]).push(s.name); });
+  const teamOfOwner={};
+  admRows.forEach(r=>{ if(r.team_name) teamOfOwner[r.owner]=r.team_name; });
+  $('#admStudents').innerHTML=Object.keys(byOwner).map(o=>{
+    const nm=document.createElement('div');
+    nm.textContent='• '+(byOwner[o].join(', '));
+    return `<div style="padding:3px 0">${nm.innerHTML}</div>`;
+  }).join('')||'<span class="muted">אין עדיין נרשמים.</span>';
+}
+$('#admMerge').onclick=()=>{ const sel=admSelected(); if(sel.length) mergeAndDownload(sel, $('#admMergeProg')); };
 
 async function initSession(){
   try{
     const {data:{session}}=await sb.auth.getSession();
     AUTH.user=session?.user||null;
     AUTH.className=AUTH.user?.user_metadata?.class_name||AUTH.user?.email?.split('@')[0]||'';
+    AUTH.admin=!!(AUTH.user&&ADMINS.includes((AUTH.user.email||'').toLowerCase()));
+    $('#adminBtn').style.display=AUTH.admin?'':'none';
     if(AUTH.user){
       $('#pickClassLbl').textContent=AUTH.className;
       try{ activeStudent=JSON.parse(localStorage.getItem('thinkcv_active_'+AUTH.user.id)||'null'); }catch(e){ activeStudent=null; }
@@ -836,7 +951,20 @@ $('#markBgBtn').onclick=()=>{
 };
 
 // ---------- annotation stage ----------
-let drawing=false, startX=0, startY=0, curBox=null;
+let drawing=false, startX=0, startY=0, curBox=null, curPos=null;
+
+// marching-ants + crosshair animation loop (draws only while hovering/drawing)
+(function antLoop(){
+  if(drawing||curPos) drawBoxes();
+  requestAnimationFrame(antLoop);
+})();
+
+function stageFlash(){
+  const st=$('#stage'); if(!st) return;
+  st.classList.remove('flash'); void st.offsetWidth;   // restart animation
+  st.classList.add('flash');
+  setTimeout(()=>st.classList.remove('flash'),600);
+}
 
 function renderStage(){
   const stage=$('#stage');
@@ -854,13 +982,17 @@ function renderStage(){
     return {x:Math.max(0,Math.min(1,cx/r.width)), y:Math.max(0,Math.min(1,cy/r.height))};};
 
   const down=e=>{ if(needClass()) return; e.preventDefault();drawing=true;const p=getXY(e);startX=p.x;startY=p.y;curBox=null;};
-  const move=e=>{if(!drawing)return;e.preventDefault();const p=getXY(e);
+  const move=e=>{
+    const p=getXY(e); curPos=p;                     // crosshair follows always
+    if(!drawing){ drawBoxes(); return; }
+    e.preventDefault();
     curBox={x:Math.min(startX,p.x),y:Math.min(startY,p.y),w:Math.abs(p.x-startX),h:Math.abs(p.y-startY)};drawBoxes();};
   const up=e=>{if(!drawing)return;drawing=false;
     if(curBox&&curBox.w>0.02&&curBox.h>0.02){
-      im.boxes.push({cls:selClass,...curBox});im.negative=false;save();}
+      im.boxes.push({cls:selClass,...curBox});im.negative=false;save();stageFlash();}
     curBox=null;renderAll();};
   cv.onmousedown=down;cv.onmousemove=move;window.onmouseup=up;
+  cv.onmouseleave=()=>{curPos=null;drawBoxes();};
   cv.ontouchstart=down;cv.ontouchmove=move;cv.ontouchend=up;
 }
 
@@ -868,11 +1000,31 @@ function drawBoxes(){
   const cv=$('#overlay');if(!cv)return;const ctx=cv.getContext('2d');
   const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
   const im=images.find(i=>i.id===activeId);if(!im)return;
+  const sel=clsOf(selClass);
+  // neon crosshair — makes precise box-drawing feel like a targeting HUD
+  if(curPos&&CLASSES.length){
+    ctx.save();
+    ctx.strokeStyle=sel.color+'55'; ctx.lineWidth=1; ctx.setLineDash([6,5]);
+    ctx.beginPath();
+    ctx.moveTo(curPos.x*W,0); ctx.lineTo(curPos.x*W,H);
+    ctx.moveTo(0,curPos.y*H); ctx.lineTo(W,curPos.y*H);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle=sel.color; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(curPos.x*W,curPos.y*H,7,0,7); ctx.stroke();
+    ctx.restore();
+  }
   const all=[...im.boxes];if(curBox)all.push({cls:selClass,...curBox,_temp:true});
   all.forEach(b=>{
     const cl=clsOf(b.cls);
-    ctx.lineWidth=2;ctx.strokeStyle=cl.color;ctx.setLineDash(b._temp?[5,4]:[]);
+    ctx.lineWidth=b._temp?2.5:2;ctx.strokeStyle=cl.color;
+    if(b._temp){                                  // marching ants while drawing
+      ctx.setLineDash([7,5]);
+      ctx.lineDashOffset=-((performance.now()/40)%12);
+      ctx.shadowColor=cl.color; ctx.shadowBlur=10;
+    } else ctx.setLineDash([]);
     ctx.strokeRect(b.x*W,b.y*H,b.w*W,b.h*H);
+    ctx.shadowBlur=0; ctx.lineDashOffset=0;
     if(!b._temp){ctx.fillStyle=cl.color;ctx.font='bold 12px sans-serif';
       const lbl=cl.name;const tw=ctx.measureText(lbl).width+8;
       ctx.fillRect(b.x*W,b.y*H-16,tw,16);
@@ -919,6 +1071,15 @@ function renderStats(){
   [{v:images.length,l:'תמונות'},{v:labeled,l:'מתויגות'},{v:neg,l:'רקע'},{v:totalBoxes,l:'מלבנים'}]
   .forEach(s=>{const d=document.createElement('div');d.className='stat';
     d.innerHTML=`<div class="v">${s.v}</div><div class="l">${s.l}</div>`;el.appendChild(d);});
+  // live tagging progress bar
+  const bar=$('#tagbar');
+  if(bar){
+    const doneCnt=labeled+neg, total=images.length;
+    bar.style.display=total?'' :'none';
+    const pct=total?Math.round(doneCnt/total*100):0;
+    $('#tagbarFill').style.width=pct+'%';
+    $('#tagbarLbl').textContent=`${doneCnt}/${total}${pct===100&&total?' 🎉':''}`;
+  }
 }
 
 function renderAll(){renderStage();renderBoxList();renderStrip();renderStats();}
@@ -1055,9 +1216,11 @@ function parseYamlNames(y){
   if(!m) return [];
   return m[1].split(',').map(s=>s.trim().replace(/^['"]|['"]$/g,'')).filter(Boolean);
 }
-$('#mergeBtn').onclick=async()=>{
-  const sel=selectedPool(); if(!sel.length) return;
-  const prog=$('#mergeProgress'); const btn=$('#mergeBtn'); btn.disabled=true;
+$('#mergeBtn').onclick=()=>{ const sel=selectedPool(); if(sel.length) mergeAndDownload(sel, $('#mergeProgress')); };
+
+// merge N shared datasets → one ZIP: union class names, remap label indices,
+// prefix files per source. Used by the pool AND the admin super-merge.
+async function mergeAndDownload(sel, prog){
   try{
     const merged=new JSZip();
     const union=[]; const unionIdx={};
@@ -1111,8 +1274,7 @@ $('#mergeBtn').onclick=async()=>{
     a.download=`thinkcv_merged_${sel.length}sets.zip`;a.click();
     prog.innerHTML=`✅ <b>ירד דאטהסט מאוחד</b>: ${totalImgs} תמונות · ${union.length} קטגוריות (${union.join(' · ')}) — העלו ל-Colab ואמנו! 🚀`;
   }catch(e){ console.error(e); prog.textContent='⚠️ שגיאה במיזוג: '+(e.message||e); }
-  btn.disabled=false;
-};
+}
 
 $('#colabBtn').onclick=()=>{ window.open(COLAB,'_blank'); };
 
@@ -1247,11 +1409,15 @@ async function detectOnDataURL(dataURL){
 
 async function runDetection(dataURL){
   if(!tfModel){toast('טענו מודל קודם');return;}
-  const {boxes, lowGuess, top}=await detectOnDataURL(dataURL);
+  // show the image immediately with a scan sweep while the model thinks
   const stage=$('#testStage');
   stage.innerHTML=`<img id="testImg"><canvas id="testOverlay"></canvas>`;
   const img=$('#testImg'); img.src=dataURL;
   await new Promise(r=>{ if(img.complete) r(); else img.onload=r; });
+  stage.classList.add('scanning');
+  $('#detList').innerHTML='<span class="muted" style="font-size:12px">🔎 סורק…</span>';
+  const {boxes, lowGuess, top}=await detectOnDataURL(dataURL);
+  stage.classList.remove('scanning');
   const cv=$('#testOverlay'); cv.width=img.clientWidth; cv.height=img.clientHeight;
   drawDetections(cv,boxes);
   renderDetList(boxes, lowGuess, top);
