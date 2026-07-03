@@ -685,23 +685,49 @@ async function extractFromVideo(file, tag){
     const ch=Math.round(v.videoHeight*cw/v.videoWidth);
     const cv=document.createElement('canvas'); cv.width=cw; cv.height=ch;
     const ctx=cv.getContext('2d');
+    // PRIME the decoder — many phone videos paint BLACK frames to canvas until
+    // playback has actually started once. Play muted for a beat, then pause.
+    try{ await v.play(); await new Promise(r=>setTimeout(r,150)); v.pause(); }catch(e){}
     const t0=Math.min(0.3,dur*0.05), t1=dur-Math.min(0.3,dur*0.05);
     const span=Math.max(t1-t0,0.1);
+    // seek → wait for `seeked` AND a truly presented frame (rVFC) before drawing
     const seek=t=>new Promise(res=>{
       let done=false;
-      const fin=()=>{ if(!done){ done=true; clearTimeout(to); res(); } };
-      const to=setTimeout(fin,1500);
-      v.onseeked=fin;
-      try{ v.currentTime=t; }catch(e){ fin(); }
+      const settle=()=>{ if(done) return; done=true; clearTimeout(to);
+        if('requestVideoFrameCallback' in v){
+          let fired=false;
+          const t2=setTimeout(()=>{ if(!fired){fired=true;res();} },400);
+          v.requestVideoFrameCallback(()=>{ if(!fired){fired=true;clearTimeout(t2);res();} });
+        } else setTimeout(res,60);
+      };
+      const to=setTimeout(settle,2500);
+      v.onseeked=settle;
+      try{ v.currentTime=t; }catch(e){ settle(); }
     });
+    const frameLooksBlack=()=>{
+      const d=ctx.getImageData(0,0,Math.min(cw,32),Math.min(ch,24)).data;
+      let s=0,n=0; for(let i=0;i<d.length;i+=4){s+=d[i]+d[i+1]+d[i+2];n++;}
+      return (s/n/3)<4;
+    };
     const tries=skipBlur?Math.min(want*2,want+80):want;
     const cands=[];
+    let blackCount=0;
     for(let i=0;i<tries;i++){
       await seek(Math.min(t0+span*(i/(tries-1||1)), t1));
       ctx.drawImage(v,0,0,cw,ch);
+      // black frame = decoder not ready yet → give it a beat and redraw
+      if(frameLooksBlack()){
+        await new Promise(r=>setTimeout(r,200));
+        ctx.drawImage(v,0,0,cw,ch);
+        if(frameLooksBlack()){ blackCount++; continue; }   // still black → drop it
+      }
       cands.push({ url:cv.toDataURL('image/jpeg',0.85), score:skipBlur?blurScore(ctx,cw,ch):1, i });
       prog.textContent=`${tag?('סרטון '+tag+' · '):''}סורק… ${i+1}/${tries}`;
       await new Promise(r=>setTimeout(r,0));
+    }
+    if(!cands.length){
+      prog.innerHTML='⚠️ כל הפריימים יצאו שחורים — הדפדפן לא מצליח לפענח את הסרטון. באייפון: הגדרות → מצלמה → Formats → <b>Most Compatible</b>, וצלמו שוב. או העלו תמונות.';
+      return;
     }
     const chosen = skipBlur
       ? cands.slice().sort((a,b)=>b.score-a.score).slice(0,want).sort((a,b)=>a.i-b.i)
@@ -1245,7 +1271,20 @@ async function testVideo(file){
     const ch=Math.round(v.videoHeight*cw/v.videoWidth);
     const cv=document.createElement('canvas'); cv.width=cw; cv.height=ch;
     const ctx=cv.getContext('2d');
-    const seek=t=>new Promise(res=>{ let done=false; const fin=()=>{if(!done){done=true;clearTimeout(to);res();}}; const to=setTimeout(fin,1500); v.onseeked=fin; try{v.currentTime=t;}catch(e){fin();} });
+    try{ await v.play(); await new Promise(r=>setTimeout(r,150)); v.pause(); }catch(e){}  // prime decoder
+    const seek=t=>new Promise(res=>{
+      let done=false;
+      const settle=()=>{ if(done) return; done=true; clearTimeout(to);
+        if('requestVideoFrameCallback' in v){
+          let fired=false;
+          const t2=setTimeout(()=>{ if(!fired){fired=true;res();} },400);
+          v.requestVideoFrameCallback(()=>{ if(!fired){fired=true;clearTimeout(t2);res();} });
+        } else setTimeout(res,60);
+      };
+      const to=setTimeout(settle,2500);
+      v.onseeked=settle;
+      try{ v.currentTime=t; }catch(e){ settle(); }
+    });
     let bestFrame=null;
     for(let i=0;i<N;i++){
       await seek(0.2 + Math.max(dur-0.4,0.1)*(i/(N-1)));
