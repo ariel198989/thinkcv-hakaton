@@ -912,7 +912,8 @@ $('#shareBtn').onclick=async()=>{
   $('#shareBtn').disabled=true;
   try{
     const team=($('#studentName').value.trim()||'team');
-    const path=`datasets/${built.name}_${Date.now()}.zip`;
+    // storage keys must be ASCII-safe — Hebrew team names live in the DB row
+    const path=`datasets/ds_${Date.now()}_${Math.random().toString(36).slice(2,8)}.zip`;
     const up=await sb.storage.from('thinkcv').upload(path, built.blob, {contentType:'application/zip'});
     if(up.error) throw up.error;
     const ins=await sb.from('thinkcv_datasets').insert({
